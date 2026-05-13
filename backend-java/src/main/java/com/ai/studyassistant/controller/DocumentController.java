@@ -1,13 +1,8 @@
 package com.ai.studyassistant.controller;
 
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import com.ai.studyassistant.service.DocumentService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
@@ -17,11 +12,10 @@ import java.util.Map;
 @RequestMapping("/api")
 public class DocumentController {
 
+    private final DocumentService documentService;
 
-    private final RestTemplate restTemplate;
-
-    public DocumentController(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+    public DocumentController(DocumentService documentService) {
+        this.documentService = documentService;
     }
 
     @GetMapping("/health")
@@ -35,38 +29,17 @@ public class DocumentController {
     ) {
         Map<String, Object> response = new HashMap<>();
 
-        try {
-            response.put("filename", file.getOriginalFilename());
-            response.put("size", file.getSize());
-            response.put("message", "File uploaded successfully");
+        response.put("filename", file.getOriginalFilename());
+        response.put("size", file.getSize());
 
-            return ResponseEntity.ok(response);
-
-        } catch (Exception e) {
-            response.put("error", e.getMessage());
-            return ResponseEntity.status(500).body(response);
-        }
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/summarize")
     public ResponseEntity<String> summarize(@RequestParam("file") MultipartFile file) {
-        String pythonUrl = "http://localhost:8000/summarize-pdf";
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        String summary = documentService.summarizeFile(file);
 
-        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("file", file.getResource());
-
-        HttpEntity<MultiValueMap<String, Object>> request =
-                new HttpEntity<>(body, headers);
-
-        ResponseEntity<String> response = restTemplate.postForEntity(
-                pythonUrl,
-                request,
-                String.class
-        );
-
-        return ResponseEntity.ok(response.getBody());
+        return ResponseEntity.ok(summary);
     }
 }
