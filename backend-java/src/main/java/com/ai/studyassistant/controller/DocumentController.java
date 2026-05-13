@@ -50,7 +50,7 @@ public class DocumentController {
 
     @PostMapping("/summarize")
     public ResponseEntity<String> summarize(@RequestParam("file") MultipartFile file) {
-        String pythonUrl = "http://localhost:8005/summarize-pdf";
+        String pythonUrl = "http://localhost:8000/summarize-pdf";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
