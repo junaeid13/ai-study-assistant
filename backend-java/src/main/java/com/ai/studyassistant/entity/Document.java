@@ -7,7 +7,7 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
+@ToString(exclude = "user")
 @Entity
 @Table(name = "documents")
 public class Document {
@@ -22,5 +22,9 @@ public class Document {
     private String summary;
 
     private Long uploadedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
 }
