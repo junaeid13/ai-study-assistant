@@ -3,11 +3,13 @@ package com.ai.studyassistant.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
+@ToString(exclude = "documents")
 @Entity
 @Table(name = "users")
 public class User {
@@ -19,5 +21,8 @@ public class User {
     private String username;
 
     private String password;
+
+    @OneToMany(mappedBy = "user")
+    private List<Document> documents;
 
 }
