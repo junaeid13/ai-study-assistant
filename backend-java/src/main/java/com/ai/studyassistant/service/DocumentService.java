@@ -1,6 +1,7 @@
 package com.ai.studyassistant.service;
 
 import com.ai.studyassistant.entity.Document;
+import com.ai.studyassistant.entity.User;
 import com.ai.studyassistant.repository.DocumentRepository;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class DocumentService {
         this.documentRepository = documentRepository;
     }
 
-    public Document summarizeFile(MultipartFile file) {
+    public Document summarizeFile(MultipartFile file, User user) {
 
         String pythonUrl = "http://localhost:8000/summarize-pdf";
 
@@ -49,6 +50,8 @@ public class DocumentService {
         document.setFilename(file.getOriginalFilename());
         document.setSummary(response.getBody());
         document.setUploadedAt(System.currentTimeMillis());
+
+        document.setUser(user);
 
 
         return documentRepository.save(document);
