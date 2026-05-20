@@ -1,6 +1,7 @@
 package com.ai.studyassistant.controller;
 
 import com.ai.studyassistant.entity.Document;
+import com.ai.studyassistant.entity.User;
 import com.ai.studyassistant.service.DocumentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +40,9 @@ public class DocumentController {
     @PostMapping("/summarize")
     public ResponseEntity<Document> summarize(@RequestParam("file") MultipartFile file) {
 
-        Document summary = documentService.summarizeFile(file);
+        User user = new User();
+        user.setId(1L);
+        Document summary = documentService.summarizeFile(file, user);
 
         return ResponseEntity.ok(summary);
     }
