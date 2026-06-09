@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.ai.studyassistant</groupId>
-	<artifactId>backend-java</artifactId>
+	<artifactId>study-assistant-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name/>
 	<description/>
