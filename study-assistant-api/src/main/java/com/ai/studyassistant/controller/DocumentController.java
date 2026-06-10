@@ -40,9 +40,7 @@ public class DocumentController {
     @PostMapping("/summarize")
     public ResponseEntity<Document> summarize(@RequestParam("file") MultipartFile file) {
 
-        User user = new User();
-        user.setId(1L);
-        Document summary = documentService.summarizeFile(file, user);
+        Document summary = documentService.summarizeFile(file);
 
         return ResponseEntity.ok(summary);
     }
