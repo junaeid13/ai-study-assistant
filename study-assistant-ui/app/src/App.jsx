@@ -1,39 +1,42 @@
-import { useEffect, useState } from "react"; 
+import { useEffect, useState } from "react";
 import axios from "axios";
 
 function App() {
 
   const [file, setFile] = useState(null);
-
-  const [result, setResult] = useState("");
-
+  const [result, setResult] = useState(null);
   const [documents, setDocuments] = useState([]);
+
+  const [loading, setLoading] = useState(false);   
+  const [error, setError] = useState("");           
 
   const loadDocuments = async () => {
     try {
-
       const response = await axios.get(
         "http://localhost:8080/api/documents"
       );
 
-      setDocuments(response.data);
+      setDocuments(Array.isArray(response.data) ? response.data : []);
 
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
+      setDocuments([]);
+      setError("Failed to load documents");
     }
   };
 
   const uploadFile = async () => {
 
     if (!file) {
-      alert("Please select a PDF file");
+      alert("Please select a file");
       return;
     }
 
+    setLoading(true);
+    setError("");
+
     try {
-
       const formData = new FormData();
-
       formData.append("file", file);
 
       const response = await axios.post(
@@ -45,25 +48,23 @@ function App() {
 
       await loadDocuments();
 
-    } catch (error) {
+    } catch (err) {
+      console.error(err);
+      setError("Upload failed. Please try again.");
 
-      console.error(error);
-
-      alert("Upload failed");
-
+    } finally {
+      setLoading(false);
     }
   };
-
 
   useEffect(() => {
     loadDocuments();
   }, []);
 
   return (
-    <div style={{ padding: 20 }}>
+    <div style={{ padding: "20px" }}>
 
       <h1>AI Study Assistant</h1>
-
 
       <input
         type="file"
@@ -71,62 +72,71 @@ function App() {
         onChange={(e) => setFile(e.target.files[0])}
       />
 
-      <button onClick={uploadFile}>
-        Upload & Summarize
+      <button
+        onClick={uploadFile}
+        disabled={loading}
+        style={{ marginLeft: "10px" }}
+      >
+        {loading ? "Uploading..." : "Upload & Summarize"}
       </button>
 
+      {error && (
+        <p style={{ color: "red" }}>{error}</p>
+      )}
+
+      {loading && (
+        <p style={{ color: "blue" }}>
+          Processing file, please wait...
+        </p>
+      )}
 
       {result && (
-        <div style={{ marginTop: 20 }}>
+        <div style={{ marginTop: "30px" }}>
 
           <h2>Latest Summary</h2>
 
           <div
             style={{
               border: "1px solid #ccc",
-              padding: "10px",
+              padding: "15px",
               borderRadius: "5px"
             }}
           >
+            <p>
+              <strong>File:</strong> {result.filename}
+            </p>
+
+            <p>
+              <strong>Summary:</strong>
+            </p>
 
             <p>{result.summary}</p>
 
           </div>
-
         </div>
       )}
 
-
-      <div style={{ marginTop: 30 }}>
+      <div style={{ marginTop: "30px" }}>
 
         <h2>Document History</h2>
 
         {documents.length === 0 ? (
-
           <p>No documents uploaded yet.</p>
-
         ) : (
-
           documents.map((doc) => (
-
             <div
               key={doc.id}
               style={{
-                border: "1px solid #ccc",
-                padding: "10px",
+                border: "1px solid #ddd",
+                padding: "15px",
                 marginBottom: "10px",
                 borderRadius: "5px"
               }}
             >
-
               <h3>{doc.filename}</h3>
-
               <p>{doc.summary}</p>
-
             </div>
-
           ))
-
         )}
 
       </div>
