@@ -1,21 +1,15 @@
 from fastapi import FastAPI, UploadFile, File
 import PyPDF2
 
-# Summarization (simple version first)
 from sumy.summarizers.lsa import LsaSummarizer
 from sumy.parsers.plaintext import PlaintextParser
 from sumy.nlp.tokenizers import Tokenizer
 
-import nltk
-
-nltk.download('punkt')
-nltk.download('punkt_tab')
-
 app = FastAPI()
 
-'''
-Utility: Extract text from PDF
-'''
+# =====================================================
+# Utility: Extract text from PDF
+# =====================================================
 def extract_text(file):
     reader = PyPDF2.PdfReader(file)
     text = ""
@@ -27,35 +21,40 @@ def extract_text(file):
 
     return text
 
-'''
-Utility: Summarize text
-'''
+
+# =====================================================
+# Utility: Summarize text
+# =====================================================
 def summarize_text(text):
-    # limit text size for performance
-    text = text[:2000]
+
+    if not text:
+        return "No text found in document."
+
+    # limit size for performance
+    text = text[:3000]
 
     parser = PlaintextParser.from_string(text, Tokenizer("english"))
     summarizer = LsaSummarizer()
 
-    summary = summarizer(parser.document, 5)
+    summary_sentences = summarizer(parser.document, 5)
 
-    return " ".join(str(sentence) for sentence in summary)
+    return " ".join(str(sentence) for sentence in summary_sentences)
 
 
-
-'''
-Endpoint: Health Check
-'''
+# =====================================================
+# Health check
+# =====================================================
 @app.get("/")
 def home():
     return {"message": "Python backend is running"}
 
 
-'''
-Endpoint: Upload a file 
-'''
+# =====================================================
+# Upload PDF (debug endpoint)
+# =====================================================
 @app.post("/upload-pdf")
 async def upload_pdf(file: UploadFile = File(...)):
+
     text = extract_text(file.file)
 
     return {
@@ -64,15 +63,15 @@ async def upload_pdf(file: UploadFile = File(...)):
     }
 
 
-'''
-Endpoint: Text Summarizer
-'''
+# =====================================================
+# Summarize PDF (MAIN endpoint used by Spring)
+# =====================================================
 @app.post("/summarize-pdf")
 async def summarize_pdf(file: UploadFile = File(...)):
+
     text = extract_text(file.file)
     summary = summarize_text(text)
 
     return {
-        "filename": file.filename,
         "summary": summary
     }
