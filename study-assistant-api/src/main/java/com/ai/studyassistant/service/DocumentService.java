@@ -31,6 +31,10 @@ public class DocumentService {
         this.userRepository = userRepository;
     }
 
+    public Document getDocumentById(Long id) {
+        return documentRepository.findById(id).orElseThrow();
+    }
+
     public Document summarizeFile(MultipartFile file) {
 
         String pythonUrl = "http://localhost:8000/summarize-pdf";
