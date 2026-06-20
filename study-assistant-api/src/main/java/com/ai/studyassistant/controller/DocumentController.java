@@ -25,6 +25,11 @@ public class DocumentController {
         return ResponseEntity.ok("Spring Boot is running 🚀");
     }
 
+    @GetMapping("/documents/{id}")
+    public ResponseEntity<Document> getDocument(@PathVariable Long id) {
+        return ResponseEntity.ok(documentService.getDocumentById(id));
+    }
+
     @PostMapping("/upload")
     public ResponseEntity<Map<String, Object>> uploadFile(
             @RequestParam("file") MultipartFile file
