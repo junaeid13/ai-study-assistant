@@ -35,7 +35,7 @@ public class DocumentService {
         return documentRepository.findById(id).orElseThrow();
     }
 
-    public Document summarizeFile(MultipartFile file) {
+    public Document summarizeFile(MultipartFile file, String username) {
 
         String pythonUrl = "http://localhost:8000/summarize-pdf";
 
@@ -73,7 +73,7 @@ public class DocumentService {
         document.setSummary(response.getBody());
         document.setUploadedAt(System.currentTimeMillis());
 
-        User user = userRepository.findByUsername("admin").orElseThrow();
+        User user = userRepository.findByUsername(username).orElseThrow();
 
         document.setUser(user);
 
