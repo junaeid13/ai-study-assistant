@@ -6,7 +6,9 @@ import com.ai.studyassistant.entity.User;
 import com.ai.studyassistant.repository.UserRepository;
 import com.ai.studyassistant.security.JwtUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
+@Service
 public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
