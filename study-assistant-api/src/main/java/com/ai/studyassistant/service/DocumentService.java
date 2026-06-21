@@ -47,13 +47,23 @@ public class DocumentService {
 
         HttpEntity<MultiValueMap<String, Object>> request =
                 new HttpEntity<>(body, headers);
+        ResponseEntity<String> response;
+        try {
 
-        ResponseEntity<String> response = restTemplate.postForEntity(
-                pythonUrl,
-                request,
-                String.class
-        );
+            response =
+                    restTemplate.postForEntity(
+                            pythonUrl,
+                            request,
+                            String.class
+                    );
 
+            System.out.println("Python Response: " + response.getBody());
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+            throw e;
+        }
 
         Document document = new Document();
         document.setFilename(file.getOriginalFilename());
@@ -70,10 +80,10 @@ public class DocumentService {
         }
 
         document.setSummary(summary);
-        document.setSummary(response.getBody());
         document.setUploadedAt(System.currentTimeMillis());
 
         User user = userRepository.findByUsername(username).orElseThrow();
+        System.out.println("jwt Username : " + username);
 
         document.setUser(user);
 
