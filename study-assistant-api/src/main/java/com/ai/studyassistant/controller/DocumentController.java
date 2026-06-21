@@ -2,6 +2,7 @@ package com.ai.studyassistant.controller;
 
 import com.ai.studyassistant.entity.Document;
 import com.ai.studyassistant.entity.User;
+import com.ai.studyassistant.security.JwtUtil;
 import com.ai.studyassistant.service.DocumentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,9 +44,15 @@ public class DocumentController {
     }
 
     @PostMapping("/summarize")
-    public ResponseEntity<Document> summarize(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<Document> summarize(
+            @RequestHeader("Authorization") String authHeader,
+            @RequestParam("file") MultipartFile file
+    ) {
 
-        Document summary = documentService.summarizeFile(file);
+        String token = authHeader.substring(7);
+        String username = JwtUtil.extractUsername(token);
+
+        Document summary = documentService.summarizeFile(file, username);
 
         return ResponseEntity.ok(summary);
     }

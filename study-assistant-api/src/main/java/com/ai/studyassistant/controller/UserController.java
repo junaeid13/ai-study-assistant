@@ -2,11 +2,13 @@ package com.ai.studyassistant.controller;
 
 
 import com.ai.studyassistant.entity.User;
+import com.ai.studyassistant.security.JwtUtil;
 import com.ai.studyassistant.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -23,6 +25,17 @@ public class UserController {
     @GetMapping
     public ResponseEntity<List<User>> getAllUser() {
         return ResponseEntity.ok(userService.getAllUser());
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> me(
+            @RequestHeader("Authorization") String authHeader
+    ) {
+        String token = authHeader.substring(7);
+        String username = JwtUtil.extractUsername(token);
+
+        return ResponseEntity.ok(
+                Map.of("username", username));
     }
 
     @PostMapping
