@@ -1,5 +1,6 @@
 package com.ai.studyassistant.service;
 
+import com.ai.studyassistant.dto.DocumentResponse;
 import com.ai.studyassistant.entity.Document;
 import com.ai.studyassistant.entity.User;
 import com.ai.studyassistant.repository.DocumentRepository;
@@ -91,7 +92,22 @@ public class DocumentService {
         return documentRepository.save(document);
     }
 
-    public List<Document> getAllDocuments() {
-        return documentRepository.findAll();
+
+    private DocumentResponse toResponse(Document document) {
+        return new DocumentResponse(
+                document.getId(),
+                document.getFilename(),
+                document.getSummary(),
+                document.getUploadedAt()
+        );
+    }
+
+
+    public List<DocumentResponse> getAllDocuments() {
+
+        return documentRepository.findAll()
+                .stream()
+                .map(this::toResponse)
+                .toList();
     }
 }

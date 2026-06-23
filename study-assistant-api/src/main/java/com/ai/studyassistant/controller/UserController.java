@@ -1,7 +1,9 @@
 package com.ai.studyassistant.controller;
 
 
+import com.ai.studyassistant.dto.UserResponse;
 import com.ai.studyassistant.entity.User;
+import com.ai.studyassistant.repository.UserRepository;
 import com.ai.studyassistant.security.JwtUtil;
 import com.ai.studyassistant.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -15,11 +17,13 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
+    private final UserRepository userRepository;
 
     public UserController(
-            UserService userService
-    ) {
+            UserService userService,
+            UserRepository userRepository) {
         this.userService = userService;
+        this.userRepository = userRepository;
     }
 
     @GetMapping
@@ -34,8 +38,14 @@ public class UserController {
         String token = authHeader.substring(7);
         String username = JwtUtil.extractUsername(token);
 
+        User user = userRepository.findByUsername(username).orElseThrow();
+
         return ResponseEntity.ok(
-                Map.of("username", username));
+                new UserResponse(
+                        user.getId(),
+                        user.getUsername()
+                )
+        );
     }
 
     @PostMapping

@@ -1,5 +1,6 @@
 package com.ai.studyassistant.controller;
 
+import com.ai.studyassistant.dto.DocumentResponse;
 import com.ai.studyassistant.entity.Document;
 import com.ai.studyassistant.entity.User;
 import com.ai.studyassistant.security.JwtUtil;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -59,7 +61,7 @@ public class DocumentController {
 
 
     @GetMapping("/documents")
-    public ResponseEntity<?> getDocuments() {
+    public ResponseEntity<List<DocumentResponse>> getDocuments() {
         return ResponseEntity.ok(documentService.getAllDocuments());
     }
 }
