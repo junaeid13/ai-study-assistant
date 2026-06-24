@@ -29,7 +29,7 @@ public class DocumentController {
     }
 
     @GetMapping("/documents/{id}")
-    public ResponseEntity<Document> getDocument(@PathVariable Long id) {
+    public ResponseEntity<DocumentResponse> getDocument(@PathVariable Long id) {
         return ResponseEntity.ok(documentService.getDocumentById(id));
     }
 
@@ -64,4 +64,6 @@ public class DocumentController {
     public ResponseEntity<List<DocumentResponse>> getDocuments() {
         return ResponseEntity.ok(documentService.getAllDocuments());
     }
+
+
 }
