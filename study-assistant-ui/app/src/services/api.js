@@ -7,6 +7,16 @@ const api = axios.create({
 baseURL: "http://localhost:8080/api"
 });
 
+export const getDocumentById = async (id) => {
+  try {
+    const response = await api.get(`/documents/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching document:", error);
+    throw error;
+  }
+};
+
 export const getCurrentUser = async () => {
 try {
 const response = await api.get("/users/me");

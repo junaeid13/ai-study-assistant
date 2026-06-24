@@ -32,9 +32,6 @@ public class DocumentService {
         this.userRepository = userRepository;
     }
 
-    public Document getDocumentById(Long id) {
-        return documentRepository.findById(id).orElseThrow();
-    }
 
     public Document summarizeFile(MultipartFile file, String username) {
 
@@ -109,5 +106,16 @@ public class DocumentService {
                 .stream()
                 .map(this::toResponse)
                 .toList();
+    }
+
+    public DocumentResponse getDocumentById(Long id) {
+
+        Document document = documentRepository
+                .findById(id)
+                .orElseThrow(
+                        () -> new RuntimeException("Document not found")
+                );
+
+        return toResponse(document);
     }
 }
