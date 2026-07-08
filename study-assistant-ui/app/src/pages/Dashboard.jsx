@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import LoadingSpinner from "../components/LoadingSprinner";
+import UploadForm from "../components/UploadForm";
 
 function Dashboard() {
 
@@ -92,96 +93,86 @@ function Dashboard() {
 
     return (
         <div style={{ padding: "20px" }}>
-        <Header 
-            username={user ? user.username : ""} 
-            onLogout={logout} 
-        />
+            <Header 
+                username={user ? user.username : ""} 
+                onLogout={logout} 
+            />
 
-        <hr />
+            <hr />
 
-        {/* UPLOAD SECTION */}
-        <div style={{ marginTop: "20px" }}>
+            {/* UPLOAD SECTION */}
+            <UploadForm
+                file={file}
+                setFile={setFile}
+                uploadFile={uploadFile}
+                loading={loading}
+            />
 
-        <input
-        type="file"
-        accept=".pdf"
-        onChange={(e) => setFile(e.target.files[0])}
-        />
 
-        <button
-        onClick={uploadFile}
-        disabled={loading || !file}
-        style={{ marginLeft: "10px" }}
-        >
-        {loading ? "Processing..." : "Upload & Summarize"}
-        </button>
-
-        </div>
-
-        {/* STATUS */}
-        {error && (
-        <p style={{ color: "red" }}>{error}</p>
-        )}
-
-        {loading && (
-        <p style={{ color: "blue" }}>
-        Processing file, please wait...
-        </p>
-        )}
-
-        {/* RESULT */}
-        {result && (
-        <div style={{ marginTop: "30px" }}>
-
-        <h2>Latest Summary</h2>
-
-        <div
-        style={{
-        border: "1px solid #ccc",
-        padding: "15px",
-        borderRadius: "5px"
-        }}
-        >
-        <p>
-        <strong>File:</strong> {result.filename}
-        </p>
-
-        <p>
-        <strong>Summary:</strong>
-        </p>
-
-        <p>{result.summary}</p>
-        </div>
-        </div>
-        )}
-
-        {/* HISTORY */}
-        <div style={{ marginTop: "30px" }}>
-
-        <h2>Document History</h2>
-
-        {documents.length === 0 ? (
-        <p>No documents uploaded yet.</p>
-        ) : (
-        documents.map((doc) => (
-        <div
-            key={doc.id}
-            style={{
-                border: "1px solid #ddd",
-                padding: "15px",
-                marginBottom: "10px",
-                borderRadius: "5px"
-            }}
-        >
-            <Link to={`/documents/${doc.id}`}>
-                {doc.filename}
-            </Link>
-            <p>{doc.summary}</p>
-            </div>
-            ))
+            {/* STATUS */}
+            {error && (
+            <p style={{ color: "red" }}>{error}</p>
             )}
 
-        </div>
+            {loading && (
+            <p style={{ color: "blue" }}>
+            Processing file, please wait...
+            </p>
+            )}
+
+            {/* RESULT */}
+            {result && (
+            <div style={{ marginTop: "30px" }}>
+
+            <h2>Latest Summary</h2>
+
+            <div
+            style={{
+            border: "1px solid #ccc",
+            padding: "15px",
+            borderRadius: "5px"
+            }}
+            >
+            <p>
+            <strong>File:</strong> {result.filename}
+            </p>
+
+            <p>
+            <strong>Summary:</strong>
+            </p>
+
+            <p>{result.summary}</p>
+            </div>
+            </div>
+            )}
+
+            {/* HISTORY */}
+            <div style={{ marginTop: "30px" }}>
+
+            <h2>Document History</h2>
+
+            {documents.length === 0 ? (
+            <p>No documents uploaded yet.</p>
+            ) : (
+            documents.map((doc) => (
+            <div
+                key={doc.id}
+                style={{
+                    border: "1px solid #ddd",
+                    padding: "15px",
+                    marginBottom: "10px",
+                    borderRadius: "5px"
+                }}
+            >
+                <Link to={`/documents/${doc.id}`}>
+                    {doc.filename}
+                </Link>
+                <p>{doc.summary}</p>
+                </div>
+                ))
+                )}
+
+            </div>
 
         </div>
     );
