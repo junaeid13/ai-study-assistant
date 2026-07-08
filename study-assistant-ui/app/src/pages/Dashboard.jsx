@@ -6,6 +6,7 @@ import Header from "../components/Header";
 import LoadingSpinner from "../components/LoadingSprinner";
 import UploadForm from "../components/UploadForm";
 import SummaryCard from "../components/SummaryCard";
+import DocumentList from "../components/DocumentList";
 
 function Dashboard() {
 
@@ -112,13 +113,13 @@ function Dashboard() {
 
             {/* STATUS */}
             {error && (
-            <p style={{ color: "red" }}>{error}</p>
+                <p style={{ color: "red" }}>{error}</p>
             )}
 
             {loading && (
-            <p style={{ color: "blue" }}>
-            Processing file, please wait...
-            </p>
+                <p style={{ color: "blue" }}>
+                    Processing file, please wait...
+                </p>
             )}
 
             {/* RESULT */}
@@ -127,28 +128,8 @@ function Dashboard() {
             {/* HISTORY */}
             <div style={{ marginTop: "30px" }}>
 
-            <h2>Document History</h2>
-
-            {documents.length === 0 ? (
-            <p>No documents uploaded yet.</p>
-            ) : (
-            documents.map((doc) => (
-            <div
-                key={doc.id}
-                style={{
-                    border: "1px solid #ddd",
-                    padding: "15px",
-                    marginBottom: "10px",
-                    borderRadius: "5px"
-                }}
-            >
-                <Link to={`/documents/${doc.id}`}>
-                    {doc.filename}
-                </Link>
-                <p>{doc.summary}</p>
-                </div>
-                ))
-                )}
+            <DocumentList documents={documents} />
+            
 
             </div>
 
