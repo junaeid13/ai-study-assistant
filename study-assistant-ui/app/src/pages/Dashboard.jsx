@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api, {getCurrentUser} from "../services/api";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function Dashboard() {
 
@@ -168,19 +169,21 @@ borderRadius: "5px"
 ) : (
 documents.map((doc) => (
 <div
-key={doc.id}
-style={{
-border: "1px solid #ddd",
-padding: "15px",
-marginBottom: "10px",
-borderRadius: "5px"
-}}
+    key={doc.id}
+    style={{
+        border: "1px solid #ddd",
+        padding: "15px",
+        marginBottom: "10px",
+        borderRadius: "5px"
+    }}
 >
-<h3>{doc.filename}</h3>
-<p>{doc.summary}</p>
-</div>
-))
-)}
+    <Link to={`/documents/${doc.id}`}>
+        {doc.filename}
+    </Link>
+    <p>{doc.summary}</p>
+    </div>
+    ))
+    )}
 
 </div>
 
