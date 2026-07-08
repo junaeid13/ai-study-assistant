@@ -3,6 +3,7 @@ import api, {getCurrentUser} from "../services/api";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Header from "../components/Header";
+import LoadingSpinner from "../components/LoadingSprinner";
 
 function Dashboard() {
 
@@ -84,6 +85,10 @@ function Dashboard() {
         loadDocuments();
         fetchUser();
     }, []);
+
+    if(loading && !result) {
+        return <LoadingSpinner />;
+    }
 
     return (
         <div style={{ padding: "20px" }}>
