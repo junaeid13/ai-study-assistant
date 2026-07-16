@@ -30,6 +30,10 @@ def extract_text(file):
 class FlashcardRequest(BaseModel):
     text: str
 
+class FlashcardResponse(BaseModel):
+    question: str
+    answer: str
+
 
 # =====================================================
 # Utility: Summarize text
@@ -87,9 +91,12 @@ async def summarize_pdf(file: UploadFile = File(...)):
 
 
 #======================================================
-# Flashcard generation endpoint (not implemented yet)
+# Flashcard generation endpoint
 #=====================================================
-@app.post("/generate-flashcards")
+@app.post(
+        "/generate-flashcards",
+        response_model=list[FlashcardResponse]
+        )
 def generate_flashcards(request: FlashcardRequest):
     sentences = [
         s.strip()
@@ -98,16 +105,17 @@ def generate_flashcards(request: FlashcardRequest):
     ]
 
     flashcards = []
+
     for sentence in sentences[:10]:
         words = sentence.split()
         if len(words) <4:
             continue
         
-        flashcards.append({
-            "question": f"What is the meaning of: '{words[0]}'?'",
-            "answer": sentence
-        })
+        flashcards.append(
+            FlashcardResponse(
+                question=f"What is the meaning of: '{sentence}'?",
+                answer=sentence
+            )   
+        )
     
-    return {
-        "flashcards": flashcards
-    }
+    return flashcards

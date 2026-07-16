@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getDocumentById } from "../services/api";
+import FlashcardList from "../components/FlashcardList";
+import { getFlashcards } from "../services/api";
 
 function DocumentDetails() {
 
@@ -9,6 +11,26 @@ function DocumentDetails() {
   const [document, setDocument] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [flashcards, setFlashcards] = useState([]);
+  const [loadingFlashcards, setLoadingFlashcards] = useState(false);
+
+  const loadFlashcards = async () => {
+    try {
+      setLoadingFlashcards(true);
+      
+      const response = await getFlashcards(id);
+      setFlashcards(response);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to load flashcards");
+    } finally {
+      setLoadingFlashcards(false);
+    }
+  };
+
+  useEffect(() => {
+    loadFlashcards();
+  }, [id]);
 
   useEffect(() => {
 
@@ -70,6 +92,16 @@ function DocumentDetails() {
       <h2>Summary</h2>
 
       <p>{document.summary}</p>
+
+      <button
+        onClick={loadFlashcards}
+        disabled={loadingFlashcards}
+        style={{ marginBottom: "20px" }}
+      >
+        {loadingFlashcards ? "Generating..." : "Generate Flashcards"}
+      </button>
+
+      <FlashcardList flashcards={flashcards} /> 
 
     </div>
   );
