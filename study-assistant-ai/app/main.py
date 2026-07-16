@@ -1,9 +1,12 @@
 from fastapi import FastAPI, UploadFile, File
 import PyPDF2
 
+from pydantic import BaseModel
 from sumy.summarizers.lsa import LsaSummarizer
 from sumy.parsers.plaintext import PlaintextParser
 from sumy.nlp.tokenizers import Tokenizer
+
+
 
 app = FastAPI()
 
@@ -20,6 +23,12 @@ def extract_text(file):
             text += extracted
 
     return text
+
+#====================================================
+# Flashcard request model
+#====================================================
+class FlashcardRequest(BaseModel):
+    text: str
 
 
 # =====================================================
@@ -74,4 +83,31 @@ async def summarize_pdf(file: UploadFile = File(...)):
 
     return {
         "summary": summary
+    }
+
+
+#======================================================
+# Flashcard generation endpoint (not implemented yet)
+#=====================================================
+@app.post("/generate-flashcards")
+def generate_flashcards(request: FlashcardRequest):
+    sentences = [
+        s.strip()
+        for s in request.text.split(".")
+        if s.strip()
+    ]
+
+    flashcards = []
+    for sentence in sentences[:10]:
+        words = sentence.split()
+        if len(words) <4:
+            continue
+        
+        flashcards.append({
+            "question": f"What is the meaning of: '{words[0]}'?'",
+            "answer": sentence
+        })
+    
+    return {
+        "flashcards": flashcards
     }
