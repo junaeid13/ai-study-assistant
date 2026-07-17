@@ -3,6 +3,9 @@ import { useParams, Link } from "react-router-dom";
 import { getDocumentById } from "../services/api";
 import FlashcardList from "../components/FlashcardList";
 import { getFlashcards } from "../services/api";
+import { getQuiz } from "../services/api";
+import QuizList from "../components/QuizList";
+
 
 function DocumentDetails() {
 
@@ -13,6 +16,31 @@ function DocumentDetails() {
   const [error, setError] = useState("");
   const [flashcards, setFlashcards] = useState([]);
   const [loadingFlashcards, setLoadingFlashcards] = useState(false);
+
+  const [quizzes, setQuizzes] = useState([]);
+  const [loadingQuizzes, setLoadingQuizzes] = useState(false);
+
+  const loadQuiz = async () => {
+
+    try {
+
+        setLoadingQuizzes(true);
+
+        const response = await getQuiz(id);
+
+        console.log("QUIZ RESPONSE:", response);
+
+        setQuizzes(response);
+
+      } catch (error) {
+
+          console.error(error);
+
+      } finally {
+
+          setLoadingQuizzes(false);
+      }
+    };
 
   const loadFlashcards = async () => {
     try {
@@ -103,6 +131,14 @@ function DocumentDetails() {
 
       <FlashcardList flashcards={flashcards} /> 
 
+      <button
+        onClick={loadQuiz}
+        disabled={loadingQuizzes}
+        >
+        {loadingQuizzes ? "Generating..." : "Generate Quiz"}
+        </button>
+
+        <QuizList quizzes={quizzes} />
     </div>
   );
 }

@@ -37,6 +37,18 @@ export const getFlashcards = async (documentId) => {
   }
 };
 
+export const getQuiz = async (documentId) => {
+  try {
+    const response = await api.get(`/quizzes/${documentId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching quiz:", error);
+    throw error;
+  }
+};
+
+
+
 /**
 * Automatically attach JWT token to every request
 */
