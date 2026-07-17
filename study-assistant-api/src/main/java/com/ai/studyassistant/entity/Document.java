@@ -36,4 +36,12 @@ public class Document {
             cascade = CascadeType.ALL
     )
     private List<Flashcard> flashcards;
+
+
+    @OneToMany(
+            mappedBy = "document",
+            cascade = CascadeType.ALL
+    )
+    @JsonIgnore
+    private List<Quiz> quizzes;
 }
