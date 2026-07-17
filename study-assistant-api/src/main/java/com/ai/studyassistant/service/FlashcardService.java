@@ -3,11 +3,16 @@ package com.ai.studyassistant.service;
 import com.ai.studyassistant.dto.FlashcardRequest;
 import com.ai.studyassistant.dto.FlashcardResponse;
 import com.ai.studyassistant.entity.Document;
+import com.ai.studyassistant.entity.Flashcard;
+import com.ai.studyassistant.mapper.FlashcardMapper;
 import com.ai.studyassistant.repository.DocumentRepository;
+import com.ai.studyassistant.repository.FlashcardRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.FlashMapManager;
 
 import java.util.List;
 
@@ -16,13 +21,21 @@ public class FlashcardService {
 
     private final DocumentRepository documentRepository;
     private final RestTemplate restTemplate;
+    private final FlashcardMapper flashcardMapper;
+    private final FlashcardRepository flashcardRepository;
+
+    @Value("${python.api.url}")
+    private String pythonApiUrl;
 
     public FlashcardService(
             DocumentRepository documentRepository,
-            RestTemplate restTemplate
-    ) {
+            RestTemplate restTemplate,
+            FlashcardMapper flashcardMapper,
+            FlashcardRepository flashcardRepository) {
         this.documentRepository = documentRepository;
         this.restTemplate = restTemplate;
+        this.flashcardMapper = flashcardMapper;
+        this.flashcardRepository = flashcardRepository;
     }
 
 
@@ -31,6 +44,15 @@ public class FlashcardService {
 
         Document document = documentRepository.findById(documentId)
                 .orElseThrow(() -> new RuntimeException("document not found"));
+
+        if (document.getFlashcards() != null &&
+                !document.getFlashcards().isEmpty()
+        ) {
+            return document.getFlashcards()
+                    .stream()
+                    .map(flashcardMapper::mapToResponse)
+                    .toList();
+        }
 
         FlashcardRequest requestBody = new FlashcardRequest(document.getSummary());
 
@@ -41,13 +63,29 @@ public class FlashcardService {
 
         ResponseEntity<List<FlashcardResponse>> response =
                 restTemplate.exchange(
-                        "http://localhost:8000/generate-flashcards",
+                        pythonApiUrl + "/generate-flashcards",
                         HttpMethod.POST,
                         request,
                         new ParameterizedTypeReference<List<FlashcardResponse>>() {
                         }
                 );
 
-        return response.getBody();
+
+        List<FlashcardResponse> flashcardResponses = response.getBody();
+
+        if (flashcardResponses == null || flashcardResponses.isEmpty())
+            throw new RuntimeException(
+                    "Python service returned no flashcards"
+            );
+
+        List<Flashcard> flashcards = flashcardResponses.stream().map(
+                card -> flashcardMapper.toEntity(card, document)
+        ).toList();
+
+        flashcardRepository.saveAll(flashcards);
+
+        return flashcards.stream()
+                .map(flashcardMapper::mapToResponse)
+                .toList();
     }
 }

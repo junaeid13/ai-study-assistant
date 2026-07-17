@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -29,4 +31,9 @@ public class Document {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @OneToMany(
+            mappedBy = "document",
+            cascade = CascadeType.ALL
+    )
+    private List<Flashcard> flashcards;
 }
