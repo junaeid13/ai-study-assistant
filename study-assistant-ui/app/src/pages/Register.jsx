@@ -1,7 +1,9 @@
 import { useState } from "react";
 import api from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 function Register() {
+  const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -16,7 +18,17 @@ function Register() {
         password,
       });
 
-      setMessage("User registered successfully. You can now login.");
+      const response = await api.post("/auth/login", {
+        username,
+        password,
+      });
+
+      localStorage.setItem(
+        "token", 
+        response.data.token
+      );
+
+      navigate("/"); 
 
     } catch (err) {
       setMessage("Registration failed");
