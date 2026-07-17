@@ -24,8 +24,24 @@ def extract_text(file):
 
     return text
 
+
 #====================================================
-# Flashcard request model
+# Quiz request and Response model
+#====================================================
+
+class QuizRequest(BaseModel):
+    text: str
+
+class QuizResponse(BaseModel):
+    question: str
+    optionA: str
+    optionB: str
+    optionC: str
+    optionD: str
+    correctAnswer: str
+
+#====================================================
+# Flashcard request and Response model
 #====================================================
 class FlashcardRequest(BaseModel):
     text: str
@@ -53,6 +69,48 @@ def summarize_text(text):
 
     return " ".join(str(sentence) for sentence in summary_sentences)
 
+
+#====================================================
+# Quiz generation endpoint
+#====================================================
+
+def generate_quiz(text: str):
+    sentences = [
+        s.strip()
+        for s in text.split(".")
+        if s.strip()
+    ]
+
+    quiz_questions = []
+
+    for sentence in sentences:
+        words = sentence.split()
+        if len(words) < 5:
+            continue
+
+        keyword = words[0]  
+
+        question = f"What is the meaning of: '{keyword}'?"
+        options = [
+            sentence, 
+            "None of the above",
+            "Not mentioned in the document", 
+            "Cannot be determined from the context"
+            ]
+        correct_answer = sentence
+
+        quiz_questions.append(
+            QuizResponse(
+                question=question,
+                optionA=options[0],
+                optionB=options[1],
+                optionC=options[2],
+                optionD=options[3],
+                correctAnswer=correct_answer
+            )
+        )
+
+    return quiz_questions[:10]
 
 # =====================================================
 # Health check
@@ -119,3 +177,15 @@ def generate_flashcards(request: FlashcardRequest):
         )
     
     return flashcards
+ 
+#=====================================================
+# Quiz generation endpoint
+#=====================================================
+
+@app.post(
+    "/generate-quiz",
+    response_model=list[QuizResponse]
+)
+def generate_quiz_endpoint(request: QuizRequest):
+    quiz_questions = generate_quiz(request.text)
+    return quiz_questions   
