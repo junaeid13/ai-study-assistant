@@ -29,4 +29,7 @@ public class User {
     @JsonIgnore
     private List<Document> documents;
 
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<QuizAttempt> quizAttempts;
 }
