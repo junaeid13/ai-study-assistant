@@ -1,13 +1,18 @@
 function QuizResult({ 
-    total,
-    correct
+    result
 }) {
     return (
-        <div style={{marginTop: "20px"}}>
+        <div 
+            style={{
+                 border: "2px solid green",
+                 marginTop: "30px",
+                 padding: "20px",
+                }}
+        >
             <h2>Quiz Result</h2>
-            <p>Total Questions: {total}</p>
-            <p>Correct Answers: {correct}</p>
-            <p>Score: {(correct / total) * 100}%</p>
+            <p>Total Questions: {" "}{result.total}</p>
+            <p>Correct Answers: {" "}{result.correct}</p>
+            <p>Score: {result.score}%</p>
         </div>
     );
 }
