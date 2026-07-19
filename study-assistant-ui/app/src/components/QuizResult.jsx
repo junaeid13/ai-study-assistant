@@ -10,8 +10,8 @@ function QuizResult({
                 }}
         >
             <h2>Quiz Result</h2>
-            <p>Total Questions: {" "}{result.total}</p>
-            <p>Correct Answers: {" "}{result.correct}</p>
+            <p>Total Questions: {" "}{result.totalQuestions}</p>
+            <p>Correct Answers: {" "}{result.correctAnswers}</p>
             <p>Score: {result.score}%</p>
         </div>
     );
