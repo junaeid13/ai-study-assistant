@@ -1,7 +1,7 @@
 package com.ai.studyassistant.dto;
 
 public record AnswerRequest(
-        String question,
+        Long quizId,
         String answer
 ) {
 }
