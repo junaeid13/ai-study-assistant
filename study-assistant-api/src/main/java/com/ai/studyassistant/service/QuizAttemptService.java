@@ -11,6 +11,7 @@ import com.ai.studyassistant.repository.DocumentRepository;
 import com.ai.studyassistant.repository.QuizAttemptRepository;
 import com.ai.studyassistant.repository.QuizRepository;
 import com.ai.studyassistant.repository.UserRepository;
+import com.ai.studyassistant.security.JwtUtil;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,6 +19,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class QuizAttemptService {
@@ -40,46 +44,66 @@ public class QuizAttemptService {
     }
 
     public QuizResultResponse submitQuiz(
+            String authHeader,
             QuizSubmissionRequest request
     ) {
-        //  step 1 : Load document
+
+        // Step 1 : Load document
         Document document = documentRepository.findById(request.documentId())
-                .orElseThrow(
-                        () -> new RuntimeException("Document not found")
-                );
-        // step 2 : Load quizzes belonging to document
-        List<Quiz> quizzes = quizRepository.findByDocumentId(request.documentId());
+                .orElseThrow(() -> new RuntimeException("Document not found"));
+
+        // Step 2 : Load quizzes
+        List<Quiz> quizzes =
+                quizRepository.findByDocumentId(request.documentId());
+
         int totalQuestions = quizzes.size();
         int correctAnswers = 0;
 
-        // step 3 : Compare answers
+        // Step 3 : Compare answers
+
+        Map<Long, Quiz> quizMap = quizzes.stream()
+                .collect(Collectors.toMap(
+                        Quiz::getId,
+                        Function.identity()
+                ));
+
         for (AnswerRequest answer : request.answers()) {
-            for (Quiz quiz : quizzes) {
-                if (quiz.getQuestion().equals(answer.question())) {
-                    if (quiz.getCorrectAnswer().equalsIgnoreCase(answer.answer())) {
-                        correctAnswers++;
-                    }
-                    break;
-                }
+
+            Quiz quiz = quizMap.get(answer.quizId());
+
+            if (quiz == null) {
+                continue;
+            }
+
+            if (answer.answer() != null &&
+                    quiz.getCorrectAnswer().equalsIgnoreCase(answer.answer())) {
+
+                correctAnswers++;
             }
         }
-        // step 4 : Calculate score
+
+        // Step 4 : Calculate score
         double score = 0;
+
         if (totalQuestions > 0) {
+
             score = ((double) correctAnswers / totalQuestions) * 100;
         }
-        // step 5 : Get current user
-        Authentication authentication = SecurityContextHolder
-                .getContext().getAuthentication();
-        String username = authentication.getName();
+
+        // Step 5 : Extract username from JWT
+
+        String token = authHeader.substring(7);
+
+        String username = JwtUtil.extractUsername(token);
+
         User user = userRepository.findByUsername(username)
-                .orElseThrow(
-                        () -> new RuntimeException(
-                                "Authenticated user not  found"
-                        )
-                );
-        // step 6 : Save quiz attempt
+                .orElseThrow(() ->
+                        new RuntimeException("Authenticated user not found"));
+
+        // Step 6 : Save attempt
+
         QuizAttempt quizAttempt = new QuizAttempt();
+
         quizAttempt.setUser(user);
         quizAttempt.setDocument(document);
         quizAttempt.setTotalQuestions(totalQuestions);
@@ -88,7 +112,9 @@ public class QuizAttemptService {
         quizAttempt.setAttemptedAt(LocalDateTime.now());
 
         quizAttemptRepository.save(quizAttempt);
-        // step 7 : Return result
+
+        // Step 7 : Return result
+
         return new QuizResultResponse(
                 totalQuestions,
                 correctAnswers,

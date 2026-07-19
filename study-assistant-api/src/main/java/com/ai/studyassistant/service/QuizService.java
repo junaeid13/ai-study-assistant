@@ -88,14 +88,17 @@ public class QuizService {
                     return quiz;
                 }).toList();
 
-        quizRepository.saveAll(quizzes);
+        List<Quiz> savedQuizzes = quizRepository.saveAll(quizzes);
 
-        // step 6 : Return response
-        return quizResponses;
+        // step 6 : Return saved quizzes with generated IDs
+        return savedQuizzes.stream()
+                .map(this::toResponse)
+                .toList();
     }
 
     private QuizResponse toResponse(Quiz quiz) {
         return new QuizResponse(
+                quiz.getId(),
                 quiz.getQuestion(),
                 quiz.getOptionA(),
                 quiz.getOptionB(),

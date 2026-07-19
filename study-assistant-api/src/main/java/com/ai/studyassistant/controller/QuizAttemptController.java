@@ -1,12 +1,10 @@
 package com.ai.studyassistant.controller;
 
+import com.ai.studyassistant.dto.QuizResultResponse;
 import com.ai.studyassistant.dto.QuizSubmissionRequest;
 import com.ai.studyassistant.service.QuizAttemptService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/quizzes")
@@ -20,11 +18,14 @@ public class QuizAttemptController {
     }
 
     @PostMapping("/submit")
-    public ResponseEntity<?> submit(
-            @RequestBody QuizSubmissionRequest quizSubmissionRequest
+    public ResponseEntity<QuizResultResponse> submit(
+            @RequestHeader("Authorization") String authHeader,
+            @RequestBody QuizSubmissionRequest request
     ) {
-        return ResponseEntity.ok(
-                quizAttemptService.submitQuiz(quizSubmissionRequest)
-        );
+
+        QuizResultResponse response =
+                quizAttemptService.submitQuiz(authHeader, request);
+
+        return ResponseEntity.ok(response);
     }
 }
