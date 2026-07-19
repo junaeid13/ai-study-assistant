@@ -1,5 +1,5 @@
 function QuizOption({
-    options,
+    option,
     selected,
     onClick
 }) {
@@ -14,7 +14,7 @@ function QuizOption({
                 paddingLeft: '10px',
                 backgroundColor: selected ? 'lightblue' : "gray",
                 cursor: 'pointer',
-        }}>{options}</button>
+        }}>{option}</button>
     );
 }
 export default QuizOption;

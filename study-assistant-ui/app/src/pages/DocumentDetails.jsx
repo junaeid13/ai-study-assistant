@@ -138,7 +138,10 @@ function DocumentDetails() {
         {loadingQuizzes ? "Generating..." : "Generate Quiz"}
         </button>
 
-        <QuizList quizzes={quizzes} />
+        <QuizList 
+            quizzes={quizzes} 
+            documentId={id}
+        />
     </div>
   );
 }
