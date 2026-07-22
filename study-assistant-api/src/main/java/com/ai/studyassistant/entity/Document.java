@@ -52,4 +52,11 @@ public class Document {
     )
     @JsonIgnore
     private List<QuizAttempt> quizAttempts;
+
+
+    @OneToMany(
+            mappedBy = "document",
+            cascade = CascadeType.ALL
+    )
+    private List<StudyNote> notes;
 }
