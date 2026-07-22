@@ -24,7 +24,16 @@ def extract_text(file):
 
     return text
 
+#====================================================
+# Study Note request and Response model
+#====================================================
 
+class StudyNoteRequest(BaseModel):
+    text: str
+
+class StudyNoteResponse(BaseModel):
+    title: str
+    content: str
 #====================================================
 # Quiz request and Response model
 #====================================================
@@ -69,6 +78,29 @@ def summarize_text(text):
 
     return " ".join(str(sentence) for sentence in summary_sentences)
 
+
+#====================================================
+# Study Note generation definition
+#====================================================
+
+def genrate_study_notes(text: str):
+    if not text:
+        return []
+    text = text[:5000]
+
+    parser = PlaintextParser.from_string(
+        text,
+        Tokenizer("english")
+    )
+    summarizer = LsaSummarizer()
+    summary_sentences = summarizer(parser.document, 8)
+
+    return [
+        StudyNoteResponse(
+            title=f"Study Notes",
+            content=" ".join(str(sentence) for sentence in summary_sentences)
+        )
+    ]
 
 #====================================================
 # Quiz generation endpoint
