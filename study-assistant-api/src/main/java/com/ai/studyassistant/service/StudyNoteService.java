@@ -18,7 +18,6 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 
 @Service
-@AllArgsConstructor
 public class StudyNoteService {
     private final RestTemplate restTemplate;
     private final DocumentRepository documentRepository;
@@ -26,7 +25,19 @@ public class StudyNoteService {
     private final StudyNoteMapper studyNoteMapper;
 
     @Value("${python.api.url}")
-    private final String pythonApiUrl;
+    private String pythonApiUrl;
+
+    public StudyNoteService(
+            RestTemplate restTemplate,
+            DocumentRepository documentRepository,
+            StudyNoteRepository studyNoteRepository,
+            StudyNoteMapper studyNoteMapper
+    ) {
+        this.restTemplate = restTemplate;
+        this.documentRepository = documentRepository;
+        this.studyNoteRepository = studyNoteRepository;
+        this.studyNoteMapper = studyNoteMapper;
+    }
 
 
     public List<StudyNoteResponse> generateNotes(Long documentId) {
