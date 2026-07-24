@@ -83,7 +83,7 @@ def summarize_text(text):
 # Study Note generation definition
 #====================================================
 
-def genrate_study_notes(text: str):
+def generate_study_notes(text: str):
     if not text:
         return []
     text = text[:5000]
@@ -221,3 +221,15 @@ def generate_flashcards(request: FlashcardRequest):
 def generate_quiz_endpoint(request: QuizRequest):
     quiz_questions = generate_quiz(request.text)
     return quiz_questions   
+
+
+#=====================================================
+# Study Note generation endpoint
+#=====================================================
+@app.post(
+    "/generate-study-notes",
+    response_model=list[StudyNoteResponse]
+)
+def generate_study_notes_endpoint(request: StudyNoteRequest):
+    study_notes = generate_study_notes(request.text)
+    return study_notes
