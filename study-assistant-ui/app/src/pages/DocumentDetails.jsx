@@ -5,12 +5,17 @@ import FlashcardList from "../components/FlashcardList";
 import { getFlashcards } from "../services/api";
 import { getQuiz } from "../services/api";
 import QuizList from "../components/QuizList";
+import StudyNoteList from "../components/StudyNoteList";
+import { getStudyNotes } from "../services/api";
 
 
 function DocumentDetails() {
 
   const { id } = useParams();
 
+
+  const [studyNotes, setStudyNotes] = useState([]);
+  const [loadingStudyNotes, setLoadingStudyNotes] = useState(false);
   const [document, setDocument] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -19,6 +24,24 @@ function DocumentDetails() {
 
   const [quizzes, setQuizzes] = useState([]);
   const [loadingQuizzes, setLoadingQuizzes] = useState(false);
+
+
+  const loadStudyNotes = async () => {
+    try {
+      setLoadingStudyNotes(true);
+      const response = await getStudyNotes(id);
+      setStudyNotes(response);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to load study notes");
+    } finally {
+      setLoadingStudyNotes(false);
+    }
+  };
+
+  useEffect(() => {
+    loadStudyNotes();
+  }, [id]);
 
   const loadQuiz = async () => {
 
@@ -136,11 +159,22 @@ function DocumentDetails() {
         disabled={loadingQuizzes}
         >
         {loadingQuizzes ? "Generating..." : "Generate Quiz"}
-        </button>
+      </button>
+
+      <button
+        onClick={loadStudyNotes}
+        disabled={loadingStudyNotes}
+        style={{ marginBottom: "20px" }}
+      >
+        {loadingStudyNotes ? "Generating..." : "Generate Study Notes"}
+      </button>
 
         <QuizList 
             quizzes={quizzes} 
             documentId={id}
+        />
+        <StudyNoteList 
+            studyNotes={studyNotes} 
         />
     </div>
   );
