@@ -145,6 +145,17 @@ function DocumentDetails() {
       <p>{document.summary}</p>
 
       <button
+        onClick={loadStudyNotes}
+        disabled={loadingStudyNotes}
+        style={{ marginBottom: "20px" }}
+      >
+        {loadingStudyNotes ? "Generating..." : "Generate Study Notes"}
+      </button>
+      <StudyNoteList 
+            studyNotes={studyNotes} 
+      />
+
+      <button
         onClick={loadFlashcards}
         disabled={loadingFlashcards}
         style={{ marginBottom: "20px" }}
@@ -161,21 +172,11 @@ function DocumentDetails() {
         {loadingQuizzes ? "Generating..." : "Generate Quiz"}
       </button>
 
-      <button
-        onClick={loadStudyNotes}
-        disabled={loadingStudyNotes}
-        style={{ marginBottom: "20px" }}
-      >
-        {loadingStudyNotes ? "Generating..." : "Generate Study Notes"}
-      </button>
-
-        <QuizList 
-            quizzes={quizzes} 
-            documentId={id}
-        />
-        <StudyNoteList 
-            studyNotes={studyNotes} 
-        />
+      <QuizList 
+          quizzes={quizzes} 
+          documentId={id}
+      />
+        
     </div>
   );
 }
