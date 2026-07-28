@@ -6,7 +6,7 @@ import { getFlashcards } from "../services/api";
 import { getQuiz } from "../services/api";
 import QuizList from "../components/QuizList";
 import StudyNoteList from "../components/StudyNoteList";
-import { generateStudyNotes } from "../services/api";
+import { getStudyNotes } from "../services/api";
 
 
 function DocumentDetails() {
@@ -27,25 +27,17 @@ function DocumentDetails() {
 
 
   const loadStudyNotes = async () => {
-
     try {
-
-        setLoadingStudyNotes(true);
-
-        const response = await generateStudyNotes(id);
-
-        setStudyNotes(response);
-
-    } catch (error) {
-
-        console.error(error);
-        setError("Failed to generate study notes");
-
+      setLoadingStudyNotes(true);
+      const response = await getStudyNotes(id);
+      setStudyNotes(response);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to load study notes");
     } finally {
-
-        setLoadingStudyNotes(false);
+      setLoadingStudyNotes(false);
     }
-};
+  };
 
   useEffect(() => {
     loadStudyNotes();
