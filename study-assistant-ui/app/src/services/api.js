@@ -7,6 +7,15 @@ const api = axios.create({
 baseURL: "http://localhost:8080/api"
 });
 
+
+export const generateStudyNotes = (documentId) =>{
+  return api.post(`/study-notes/${documentId}`);
+}
+
+export const getStudyNotes = async (documentId) => {
+  return api.get(`/study-notes/${documentId}`);
+};
+
 export const getDocumentById = async (id) => {
   try {
     const response = await api.get(`/documents/${id}`);
