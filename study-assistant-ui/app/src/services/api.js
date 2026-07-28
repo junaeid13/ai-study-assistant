@@ -8,12 +8,12 @@ baseURL: "http://localhost:8080/api"
 });
 
 
-export const generateStudyNotes = (documentId) =>{
-  return api.post(`/study-notes/${documentId}`);
-}
+export const generateStudyNotes = async (documentId) => {
+    const response = await api.post(
+        `/documents/${documentId}/notes`
+    );
 
-export const getStudyNotes = async (documentId) => {
-  return api.get(`/study-notes/${documentId}`);
+    return response.data;
 };
 
 export const getDocumentById = async (id) => {
