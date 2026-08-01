@@ -10,6 +10,19 @@ from sumy.nlp.tokenizers import Tokenizer
 
 app = FastAPI()
 
+
+
+# =====================================================
+#  Key Concept: Request and Response model
+# =====================================================
+
+class KeyConceptRequest(BaseModel):
+    text:str
+
+class KeyConceptResponse(BaseModel):
+    concept: str
+    explanation: str
+
 # =====================================================
 # Utility: Extract text from PDF
 # =====================================================
@@ -78,6 +91,35 @@ def summarize_text(text):
 
     return " ".join(str(sentence) for sentence in summary_sentences)
 
+
+
+# ===================================================
+# Key concept generation definition
+# ===================================================
+
+def generate_key_concepts(text):
+    sentences = [
+        s.strip()
+        for s in text.split(".")
+        if s.strip()
+    ]
+
+    concepts = []
+
+    for sentence in sentences[:10]:
+        words = sentence.split()
+
+        if len(words) <5:
+            continue
+
+        concepts.append(
+            KeyConceptResponse(
+                concept = words[0],
+                explanation = sentence
+            )
+        )
+
+    return concepts
 
 #====================================================
 # Study Note generation definition
