@@ -59,4 +59,10 @@ public class Document {
             cascade = CascadeType.ALL
     )
     private List<StudyNote> notes;
+
+    @OneToMany(
+            mappedBy = "document",
+            cascade = CascadeType.ALL
+    )
+    private List<KeyConcept> keyConcepts;
 }
