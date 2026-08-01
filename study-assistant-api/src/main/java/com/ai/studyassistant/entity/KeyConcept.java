@@ -22,4 +22,10 @@ public class KeyConcept {
     @ManyToOne
     @JoinColumn(name = "document_id")
     private Document document;
+
+    public KeyConcept(String concept, String explanation, Document document) {
+        this.concept = concept;
+        this.explanation = explanation;
+        this.document = document;
+    }
 }
