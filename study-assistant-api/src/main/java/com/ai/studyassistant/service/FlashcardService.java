@@ -7,35 +7,30 @@ import com.ai.studyassistant.entity.Flashcard;
 import com.ai.studyassistant.mapper.FlashcardMapper;
 import com.ai.studyassistant.repository.DocumentRepository;
 import com.ai.studyassistant.repository.FlashcardRepository;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.servlet.FlashMapManager;
-
 import java.util.List;
 
 @Service
 public class FlashcardService {
 
     private final DocumentRepository documentRepository;
-    private final RestTemplate restTemplate;
     private final FlashcardMapper flashcardMapper;
     private final FlashcardRepository flashcardRepository;
+    private final PythonApiClient pythonApiClient;
 
-    @Value("${python.api.url}")
-    private String pythonApiUrl;
 
     public FlashcardService(
             DocumentRepository documentRepository,
-            RestTemplate restTemplate,
             FlashcardMapper flashcardMapper,
-            FlashcardRepository flashcardRepository) {
+            FlashcardRepository flashcardRepository,
+            PythonApiClient pythonApiClient
+    ) {
         this.documentRepository = documentRepository;
-        this.restTemplate = restTemplate;
         this.flashcardMapper = flashcardMapper;
         this.flashcardRepository = flashcardRepository;
+        this.pythonApiClient = pythonApiClient;
     }
 
 
@@ -56,22 +51,12 @@ public class FlashcardService {
 
         FlashcardRequest requestBody = new FlashcardRequest(document.getSummary());
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        HttpEntity<FlashcardRequest> request = new HttpEntity<>(requestBody, headers);
-
-        ResponseEntity<List<FlashcardResponse>> response =
-                restTemplate.exchange(
-                        pythonApiUrl + "/generate-flashcards",
-                        HttpMethod.POST,
-                        request,
-                        new ParameterizedTypeReference<List<FlashcardResponse>>() {
-                        }
-                );
-
-
-        List<FlashcardResponse> flashcardResponses = response.getBody();
+        List<FlashcardResponse> flashcardResponses = pythonApiClient.post(
+                "/generate-flashcards",
+                requestBody,
+                new ParameterizedTypeReference<List<FlashcardResponse>>() {
+                }
+        );
 
         if (flashcardResponses == null || flashcardResponses.isEmpty())
             throw new RuntimeException(
