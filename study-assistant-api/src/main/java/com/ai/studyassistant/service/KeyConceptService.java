@@ -7,36 +7,29 @@ import com.ai.studyassistant.entity.KeyConcept;
 import com.ai.studyassistant.mapper.KeyConceptMapper;
 import com.ai.studyassistant.repository.DocumentRepository;
 import com.ai.studyassistant.repository.KeyConceptRepository;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-
-import javax.print.attribute.standard.Media;
 import java.util.List;
 
 @Service
 public class KeyConceptService {
-    private final RestTemplate restTemplate;
+    private final PythonApiClient pythonApiClient;
     private final DocumentRepository documentRepository;
     private final KeyConceptRepository keyConceptRepository;
     private final KeyConceptMapper keyConceptMapper;
 
 
-    @Value("${python.api.url}")
-    private String pythonApiUrl;
-
     public KeyConceptService(
             DocumentRepository documentRepository,
             KeyConceptRepository keyConceptRepository,
             KeyConceptMapper keyConceptMapper,
-            RestTemplate restTemplate
+            PythonApiClient pythonApiClient
     ) {
         this.documentRepository = documentRepository;
         this.keyConceptMapper = keyConceptMapper;
         this.keyConceptRepository = keyConceptRepository;
-        this.restTemplate = restTemplate;
+        this.pythonApiClient = pythonApiClient;
     }
 
     public List<KeyConceptResponse> generateKeyConcepts(Long documentId) {
@@ -52,21 +45,13 @@ public class KeyConceptService {
 
         KeyConceptRequest requestBody = new KeyConceptRequest(document.getSummary());
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        HttpEntity<KeyConceptRequest> request = new HttpEntity<>(requestBody, headers);
-
-        ResponseEntity<List<KeyConceptResponse>> response =
-                restTemplate.exchange(
-                        pythonApiUrl + "/generate-key-concepts",
-                        HttpMethod.POST,
-                        request,
+        List<KeyConceptResponse> conceptResponses =
+                pythonApiClient.post(
+                        "/generate-key-concepts",
+                        requestBody,
                         new ParameterizedTypeReference<List<KeyConceptResponse>>() {
                         }
                 );
-
-        List<KeyConceptResponse> conceptResponses = response.getBody();
 
         if (conceptResponses == null || conceptResponses.isEmpty()) {
             throw new RuntimeException(
