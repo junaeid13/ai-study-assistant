@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class KeyConceptMapper {
 
-    public KeyConcept toEntity(
+    public static KeyConcept toEntity(
             KeyConceptResponse response,
             Document document
     ) {
