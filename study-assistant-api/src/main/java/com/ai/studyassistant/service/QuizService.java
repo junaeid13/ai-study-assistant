@@ -19,19 +19,18 @@ public class QuizService {
 
     private final DocumentRepository documentRepository;
     private final QuizRepository quizRepository;
-    private final RestTemplate restTemplate;
+    private final PythonApiClient pythonApiClient;
 
-    @Value("${python.api.url}")
-    private String pythonApiUrl;
+
 
     public QuizService(
             DocumentRepository documentRepository,
             QuizRepository quizRepository,
-            RestTemplate restTemplate
+            PythonApiClient pythonApiClient
     ) {
         this.documentRepository = documentRepository;
         this.quizRepository = quizRepository;
-        this.restTemplate = restTemplate;
+        this.pythonApiClient = pythonApiClient;
     }
 
     public List<QuizResponse> generateQuiz(Long documentId) {
@@ -52,21 +51,15 @@ public class QuizService {
         // step 3 : Otherwise call Python
         QuizRequest requestBody = new QuizRequest(document.getSummary());
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<QuizRequest> request = new HttpEntity<>(requestBody, headers);
 
         // step 4 : Save quiz
-        ResponseEntity<List<QuizResponse>> response = restTemplate.exchange(
-                pythonApiUrl + "/generate-quiz",
-                HttpMethod.POST,
-                request,
+        List<QuizResponse> quizResponses = pythonApiClient.post(
+                "/generate-quiz",
+                requestBody,
                 new ParameterizedTypeReference<List<QuizResponse>>() {
                 }
         );
-
-        List<QuizResponse> quizResponses = response.getBody();
 
         if (quizResponses == null || quizResponses.isEmpty())
             return List.of();
