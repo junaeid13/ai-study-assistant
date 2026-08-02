@@ -7,9 +7,6 @@ import com.ai.studyassistant.repository.DocumentRepository;
 import com.ai.studyassistant.repository.UserRepository;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.json.JSONObject;
 
@@ -18,55 +15,26 @@ import java.util.List;
 @Service
 public class DocumentService {
 
-    private final RestTemplate restTemplate;
     private final DocumentRepository documentRepository;
     private final UserRepository userRepository;
+    private final PythonApiClient pythonApiClient;
 
     public DocumentService(
-            RestTemplate restTemplate,
             DocumentRepository documentRepository,
-            UserRepository userRepository
-    ) {
-        this.restTemplate = restTemplate;
+            UserRepository userRepository,
+            PythonApiClient pythonApiClient) {
         this.documentRepository = documentRepository;
         this.userRepository = userRepository;
+        this.pythonApiClient = pythonApiClient;
     }
 
 
     public Document summarizeFile(MultipartFile file, String username) {
 
-        String pythonUrl = "http://localhost:8000/summarize-pdf";
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-
-        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("file", file.getResource());
-
-        HttpEntity<MultiValueMap<String, Object>> request =
-                new HttpEntity<>(body, headers);
-        ResponseEntity<String> response;
-        try {
-
-            response =
-                    restTemplate.postForEntity(
-                            pythonUrl,
-                            request,
-                            String.class
-                    );
-
-            System.out.println("Python Response: " + response.getBody());
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-            throw e;
-        }
-
-        Document document = new Document();
-        document.setFilename(file.getOriginalFilename());
-
-        String responseBody = response.getBody();
+        String responseBody = pythonApiClient.uploadFile(
+                "/summarize-pdf",
+                file
+        );
 
         String summary;
 
@@ -77,26 +45,19 @@ public class DocumentService {
             summary = responseBody;
         }
 
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        System.out.println("jwt Username : " + username);
+
+
+        Document document = new Document();
         document.setSummary(summary);
         document.setUploadedAt(System.currentTimeMillis());
-
-        User user = userRepository.findByUsername(username).orElseThrow();
-        System.out.println("jwt Username : " + username);
 
         document.setUser(user);
 
 
         return documentRepository.save(document);
-    }
-
-
-    private DocumentResponse toResponse(Document document) {
-        return new DocumentResponse(
-                document.getId(),
-                document.getFilename(),
-                document.getSummary(),
-                document.getUploadedAt()
-        );
     }
 
 
@@ -117,5 +78,14 @@ public class DocumentService {
                 );
 
         return toResponse(document);
+    }
+
+    private DocumentResponse toResponse(Document document) {
+        return new DocumentResponse(
+                document.getId(),
+                document.getFilename(),
+                document.getSummary(),
+                document.getUploadedAt()
+        );
     }
 }

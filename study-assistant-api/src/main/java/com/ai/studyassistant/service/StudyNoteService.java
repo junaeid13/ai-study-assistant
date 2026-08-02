@@ -19,7 +19,7 @@ import java.util.List;
 
 @Service
 public class StudyNoteService {
-    private final RestTemplate restTemplate;
+    private final PythonApiClient pythonApiClient;
     private final DocumentRepository documentRepository;
     private final StudyNoteRepository studyNoteRepository;
     private final StudyNoteMapper studyNoteMapper;
@@ -28,12 +28,12 @@ public class StudyNoteService {
     private String pythonApiUrl;
 
     public StudyNoteService(
-            RestTemplate restTemplate,
+            PythonApiClient pythonApiClient,
             DocumentRepository documentRepository,
             StudyNoteRepository studyNoteRepository,
             StudyNoteMapper studyNoteMapper
     ) {
-        this.restTemplate = restTemplate;
+        this.pythonApiClient = pythonApiClient;
         this.documentRepository = documentRepository;
         this.studyNoteRepository = studyNoteRepository;
         this.studyNoteMapper = studyNoteMapper;
@@ -50,21 +50,13 @@ public class StudyNoteService {
         }
         // call python service
         StudyNoteRequest requestBody = new StudyNoteRequest(document.getSummary());
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<StudyNoteRequest> requestHttpEntity = new HttpEntity<>(requestBody, headers);
-
-        ResponseEntity<List<StudyNoteResponse>> response =
-                restTemplate.exchange(
-                        pythonApiUrl + "/generate-study-notes",
-                        HttpMethod.POST,
-                        requestHttpEntity,
-                        new ParameterizedTypeReference<List<StudyNoteResponse>>() {
-                        }
-                );
-
-        List<StudyNoteResponse> studyNoteResponses = response.getBody();
+        List<StudyNoteResponse> studyNoteResponses = pythonApiClient.post(
+                "/generate-study-notes",
+                requestBody,
+                new ParameterizedTypeReference<List<StudyNoteResponse>>() {
+                }
+        );
 
         if (studyNoteResponses == null || studyNoteResponses.isEmpty()) {
             throw new RuntimeException("Python service returned no study notes");

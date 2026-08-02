@@ -5,7 +5,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -29,8 +32,7 @@ public class PythonApiClient {
             ParameterizedTypeReference<List<R>> responseType
     ) {
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpHeaders headers = createHeaders(MediaType.APPLICATION_JSON);
 
         HttpEntity<T> request = new HttpEntity<>(requestBody, headers);
 
@@ -52,8 +54,18 @@ public class PythonApiClient {
 
     public String uploadFile(
             String endpoint,
-            HttpEntity<?> request
+            MultipartFile file
     ) {
+        HttpHeaders headers = createHeaders(MediaType.MULTIPART_FORM_DATA);
+
+        MultiValueMap<String, Object> body =
+                new LinkedMultiValueMap<>();
+
+        body.add("file", file.getResource());
+
+        HttpEntity<MultiValueMap<String, Object>> request =
+                new HttpEntity<>(body, headers);
+
         ResponseEntity<String> response =
                 restTemplate.postForEntity(
                         pythonApiUrl + endpoint,
@@ -61,6 +73,18 @@ public class PythonApiClient {
                         String.class
                 );
 
+        if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
+            throw new RuntimeException(
+                    "Python API returned an invalid response"
+            );
+        }
         return response.getBody();
+    }
+
+
+    private HttpHeaders createHeaders(MediaType mediaType) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(mediaType);
+        return headers;
     }
 }

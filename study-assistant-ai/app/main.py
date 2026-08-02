@@ -275,3 +275,16 @@ def generate_quiz_endpoint(request: QuizRequest):
 def generate_study_notes_endpoint(request: StudyNoteRequest):
     study_notes = generate_study_notes(request.text)
     return study_notes
+
+
+#=====================================================
+# Key Concept generation endpoint
+#=====================================================
+
+@app.post(
+    "/generate-key-concepts",
+    response_model=list[KeyConceptResponse]
+)
+def generate_key_concepts_endpoint(request: KeyConceptRequest):
+    key_concepts = generate_key_concepts(request.text)
+    return key_concepts 
