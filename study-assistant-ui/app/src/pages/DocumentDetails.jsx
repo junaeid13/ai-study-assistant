@@ -7,6 +7,8 @@ import { getQuiz } from "../services/api";
 import QuizList from "../components/QuizList";
 import StudyNoteList from "../components/StudyNoteList";
 import { getStudyNotes } from "../services/api";
+import keyConceptList from "../components/KeyConceptList";
+import {generateKeyConcepts, getKeyConcepts} from "../services/api";
 
 
 function DocumentDetails() {
@@ -14,6 +16,10 @@ function DocumentDetails() {
   const { id } = useParams();
 
 
+
+
+  const [keyConcepts, setKeyConcepts] = useState([]);
+  const [loadingKeyConcepts, setLoadingKeyConcepts] = useState(false);
   const [studyNotes, setStudyNotes] = useState([]);
   const [loadingStudyNotes, setLoadingStudyNotes] = useState(false);
   const [document, setDocument] = useState(null);
@@ -24,6 +30,37 @@ function DocumentDetails() {
 
   const [quizzes, setQuizzes] = useState([]);
   const [loadingQuizzes, setLoadingQuizzes] = useState(false);
+
+
+  const generateConcepts = async () => {
+    try {
+      setLoadingKeyConcepts(true);
+      const response = await generateKeyConcepts(id);
+      setKeyConcepts(response);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to generate key concepts");
+    } finally {
+      setLoadingKeyConcepts(false);
+    }
+  };
+
+  const loadKeyConcepts = async () => {
+    try {
+      setLoadingKeyConcepts(true);
+      const response = await getKeyConcepts(id);
+      setKeyConcepts(response);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to load key concepts");
+    } finally {
+      setLoadingKeyConcepts(false);
+    }
+  };
+  
+  useEffect(() => {
+    loadKeyConcepts();
+  }, [id]);
 
 
   const loadStudyNotes = async () => {
@@ -154,6 +191,19 @@ function DocumentDetails() {
       <StudyNoteList 
             studyNotes={studyNotes} 
       />
+
+      <h2>Key Concepts</h2>
+      <button 
+        onClick={generateConcepts}
+        disabled={loadingKeyConcepts}
+        style={{ marginBottom: "20px" }}
+      >
+        {loadingKeyConcepts ? "Generating..." : "Generate Key Concepts"}
+      </button>
+
+      <keyConceptList keyConcepts={keyConcepts} />
+
+      <h2>Flashcards</h2>
 
       <button
         onClick={loadFlashcards}

@@ -8,6 +8,18 @@ baseURL: "http://localhost:8080/api"
 });
 
 
+export const generateKeyConcepts = async (documentId) => {
+  const response = await api.post(
+    `/key-concepts/${documentId}`
+  );
+  return response.data;
+};
+
+export const getKeyConcepts = async (documentId) => {
+  const response = await api.get(`/key-concepts/${documentId}`);
+  return response.data;
+};
+
 export const generateStudyNotes = (documentId) =>{
   return api.post(`/study-notes/${documentId}`);
 }
