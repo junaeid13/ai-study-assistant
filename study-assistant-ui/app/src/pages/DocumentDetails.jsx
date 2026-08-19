@@ -192,6 +192,19 @@ function DocumentDetails() {
             studyNotes={studyNotes} 
       />
 
+      <h2>Key Concepts</h2>
+      <button 
+        onClick={generateConcepts}
+        disabled={loadingKeyConcepts}
+        style={{ marginBottom: "20px" }}
+      >
+        {loadingKeyConcepts ? "Generating..." : "Generate Key Concepts"}
+      </button>
+
+      <keyConceptList keyConcepts={keyConcepts} />
+
+      <h2>Flashcards</h2>
+
       <button
         onClick={loadFlashcards}
         disabled={loadingFlashcards}
