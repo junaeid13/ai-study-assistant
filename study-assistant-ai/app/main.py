@@ -218,6 +218,7 @@ async def summarize_pdf(file: UploadFile = File(...)):
     summary = summarize_text(text)
 
     return {
+        "text": text,
         "summary": summary
     }
 
