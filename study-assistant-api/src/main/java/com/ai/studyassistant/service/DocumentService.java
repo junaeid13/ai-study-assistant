@@ -36,22 +36,28 @@ public class DocumentService {
                 file
         );
 
-        String summary;
+        JSONObject json;
+
 
         try {
-            JSONObject json = new JSONObject(responseBody);
-            summary = json.getString("summary");
+            json = new JSONObject(responseBody);
+
         } catch (Exception e) {
-            summary = responseBody;
+            throw new RuntimeException(
+                    "Invalid response from python API: " + responseBody, e
+            );
         }
+
+        String summary = json.getString("summary");
+        String extractedText = json.getString("text");
 
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        System.out.println("jwt Username : " + username);
 
 
         Document document = new Document();
         document.setSummary(summary);
+        document.setExtractedText(extractedText);
         document.setUploadedAt(System.currentTimeMillis());
 
         document.setUser(user);
