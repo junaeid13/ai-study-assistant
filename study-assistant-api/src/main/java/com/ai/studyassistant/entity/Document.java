@@ -24,6 +24,9 @@ public class Document {
     @Column(columnDefinition = "TEXT")
     private String summary;
 
+    @Column(columnDefinition = "TEXT")
+    private String extractedText;
+
     private Long uploadedAt;
 
     @ManyToOne
