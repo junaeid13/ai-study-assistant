@@ -59,6 +59,7 @@ public class DocumentService {
         document.setSummary(summary);
         document.setExtractedText(extractedText);
         document.setUploadedAt(System.currentTimeMillis());
+        document.setFilename(file.getOriginalFilename());
 
         document.setUser(user);
 

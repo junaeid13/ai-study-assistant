@@ -68,4 +68,12 @@ public class Document {
             cascade = CascadeType.ALL
     )
     private List<KeyConcept> keyConcepts;
+
+    @OneToMany(
+            mappedBy = "document",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @JsonIgnore
+    private List<DocumentChunk> chunks;
 }
