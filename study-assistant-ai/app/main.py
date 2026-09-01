@@ -5,12 +5,27 @@ from pydantic import BaseModel
 from sumy.summarizers.lsa import LsaSummarizer
 from sumy.parsers.plaintext import PlaintextParser
 from sumy.nlp.tokenizers import Tokenizer
+from study_assistant_ai.app.vector_store import VectorStore
+
+
 
 
 
 app = FastAPI()
 
 
+#====================================================
+# Request and Search model for Vector Store
+#====================================================
+class ChunkRequest(BaseModel):
+    document_id: int
+    chunks: list[str]
+
+
+class SearchRequest(BaseModel):
+    document_id: int
+    query: str
+    top_k: int = 5
 
 # =====================================================
 #  Key Concept: Request and Response model
