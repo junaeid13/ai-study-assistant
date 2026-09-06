@@ -52,6 +52,28 @@ public class PythonApiClient {
         return response.getBody();
     }
 
+    public <T, R> R postForRecord(
+            String endpoint,
+            T requestBody,
+            Class<R> responseType
+    ) {
+        HttpHeaders headers = createHeaders(MediaType.APPLICATION_JSON);
+        HttpEntity<T> request = new HttpEntity<>(requestBody, headers);
+        ResponseEntity<R> response = restTemplate.exchange(
+                pythonApiUrl + endpoint,
+                HttpMethod.POST,
+                request,
+                responseType
+        );
+
+        if (!response.getStatusCode().is2xxSuccessful()) {
+            throw new RuntimeException(
+                    "Python Api returned non-successful response"
+            );
+        }
+        return response.getBody();
+    }
+
     public String uploadFile(
             String endpoint,
             MultipartFile file
