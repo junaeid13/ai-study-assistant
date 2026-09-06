@@ -55,4 +55,5 @@ class VectorStore:
         )
         return results
 
-    vector_store = VectorStore()
+
+vector_store = VectorStore()

@@ -304,3 +304,16 @@ def generate_study_notes_endpoint(request: StudyNoteRequest):
 def generate_key_concepts_endpoint(request: KeyConceptRequest):
     key_concepts = generate_key_concepts(request.text)
     return key_concepts 
+
+
+@app.post("/create-embeddings")
+def create_embeddings(request: ChunkRequest):
+    vector_store.add_chunks(
+        document_id=request.document_id,
+        chunks=request.chunks
+    )
+    return {
+        "message": "Embeddings created successfully.",
+        "document_id": request.document_id,
+        "chunks_count": len(request.chunks)
+        }  
