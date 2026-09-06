@@ -5,12 +5,27 @@ from pydantic import BaseModel
 from sumy.summarizers.lsa import LsaSummarizer
 from sumy.parsers.plaintext import PlaintextParser
 from sumy.nlp.tokenizers import Tokenizer
+from study_assistant_ai.app.vector_store import VectorStore
+
+
 
 
 
 app = FastAPI()
 
 
+#====================================================
+# Request and Search model for Vector Store
+#====================================================
+class ChunkRequest(BaseModel):
+    document_id: int
+    chunks: list[str]
+
+
+class SearchRequest(BaseModel):
+    document_id: int
+    query: str
+    top_k: int = 5
 
 # =====================================================
 #  Key Concept: Request and Response model
@@ -289,3 +304,25 @@ def generate_study_notes_endpoint(request: StudyNoteRequest):
 def generate_key_concepts_endpoint(request: KeyConceptRequest):
     key_concepts = generate_key_concepts(request.text)
     return key_concepts 
+
+
+@app.post("/create-embeddings")
+def create_embeddings(request: ChunkRequest):
+    vector_store.add_chunks(
+        document_id=request.document_id,
+        chunks=request.chunks
+    )
+    return {
+        "message": "Embeddings created successfully.",
+        "document_id": request.document_id,
+        "chunks_count": len(request.chunks)
+        }  
+
+@app.post("/semantic-search")
+def semantic_search(request: SearchRequest):
+    results = vector_store.search(
+        document_id=request.document_id,
+        query=request.query,
+        top_k=request.top_k
+    )
+    return results
