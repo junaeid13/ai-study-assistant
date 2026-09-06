@@ -1,5 +1,7 @@
 package com.ai.studyassistant.service;
 
+import com.ai.studyassistant.dto.EmbeddingRequest;
+import com.ai.studyassistant.dto.EmbeddingResponse;
 import com.ai.studyassistant.entity.Document;
 import com.ai.studyassistant.entity.DocumentChunk;
 import com.ai.studyassistant.repository.DocumentChunkRepository;
@@ -15,15 +17,18 @@ public class DocumentChunkService {
     private final DocumentRepository documentRepository;
     private final DocumentChunkRepository documentChunkRepository;
     private final DocumentChunker documentChunker;
+    private final PythonApiClient pythonApiClient;
 
     public DocumentChunkService(
             DocumentChunkRepository documentChunkRepository,
             DocumentRepository documentRepository,
-            DocumentChunker documentChunker
+            DocumentChunker documentChunker,
+            PythonApiClient pythonApiClient
     ) {
         this.documentChunkRepository = documentChunkRepository;
         this.documentRepository = documentRepository;
         this.documentChunker = documentChunker;
+        this.pythonApiClient = pythonApiClient;
     }
 
     public List<DocumentChunk> createChunk(Long documentId) {
@@ -65,6 +70,30 @@ public class DocumentChunkService {
 
         }
         // save all chunks
-        return documentChunkRepository.saveAll(documentChunks);
+        List<DocumentChunk> savedChunks = documentChunkRepository.saveAll(documentChunks);
+        createEmbeddings(documentId, chunks);
+        return savedChunks;
+    }
+
+    private void createEmbeddings(
+            Long documentId,
+            List<String> chunks
+    ) {
+        EmbeddingRequest request = new EmbeddingRequest(
+                documentId,
+                chunks
+        );
+
+        EmbeddingResponse response = pythonApiClient.postForObject(
+                "/create-embeddings",
+                request,
+                EmbeddingResponse.class
+        );
+
+        if (response == null) {
+            throw new RuntimeException(
+                    "Failed to create embeddings for documentId: " + documentId
+            );
+        }
     }
 }

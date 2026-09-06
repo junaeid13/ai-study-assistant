@@ -52,7 +52,7 @@ public class PythonApiClient {
         return response.getBody();
     }
 
-    public <T, R> R postForRecord(
+    public <T, R> R postForObject(
             String endpoint,
             T requestBody,
             Class<R> responseType
