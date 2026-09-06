@@ -317,3 +317,12 @@ def create_embeddings(request: ChunkRequest):
         "document_id": request.document_id,
         "chunks_count": len(request.chunks)
         }  
+
+@app.post("/semantic-search")
+def semantic_search(request: SearchRequest):
+    results = vector_store.search(
+        document_id=request.document_id,
+        query=request.query,
+        top_k=request.top_k
+    )
+    return results
