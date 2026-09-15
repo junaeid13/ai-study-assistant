@@ -13,6 +13,15 @@ from study_assistant_ai.app.vector_store import VectorStore
 
 app = FastAPI()
 
+#====================================================
+# Request model for Chat
+#====================================================
+
+class ChatRequest(BaseModel):
+    document_id: int 
+    question: str
+    top_k: int = 5
+
 
 #====================================================
 # Request and Search model for Vector Store
@@ -305,6 +314,9 @@ def generate_key_concepts_endpoint(request: KeyConceptRequest):
     key_concepts = generate_key_concepts(request.text)
     return key_concepts 
 
+#=====================================================
+# Vector Store endpoints
+#=====================================================
 
 @app.post("/create-embeddings")
 def create_embeddings(request: ChunkRequest):
@@ -326,3 +338,51 @@ def semantic_search(request: SearchRequest):
         top_k=request.top_k
     )
     return results
+
+#====================================================
+# Chat with Document endpoint
+#====================================================
+
+@app.post("/chat-with-document")
+def chat_with_document(request: ChatRequest):
+    results = vector_store.search(
+        document_id=request.document_id,
+        query=request.question,
+        top_k=request.top_k
+    )
+
+    if not results:
+        return {
+            "answer": "No relevant information found in the document.",
+            "sources": []
+        }
+
+    context = "\n\n".join(
+        result["context"] for result in results
+        )
+
+    prompt = f"""
+            You are an AI study assistant.
+
+            Answer the user's question using ONLY the information
+            provided in the document context below.
+
+            If the answer cannot be found in the context,
+            say that the information is not available in the document.
+
+            Document context:
+            {context}
+
+            User question:
+            {request.question}
+
+            Answer:
+        """ 
+
+    answer = {
+        "Relevant Information": context,
+    }
+    return {
+        "answer": answer,
+        "sources": results
+    }
