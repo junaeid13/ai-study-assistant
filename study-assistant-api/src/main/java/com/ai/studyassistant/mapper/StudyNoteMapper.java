@@ -1,6 +1,6 @@
 package com.ai.studyassistant.mapper;
 
-import com.ai.studyassistant.dto.StudyNoteResponse;
+import com.ai.studyassistant.dto.study.StudyNoteResponse;
 import com.ai.studyassistant.entity.Document;
 import com.ai.studyassistant.entity.StudyNote;
 import org.springframework.stereotype.Component;

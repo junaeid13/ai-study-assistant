@@ -1,7 +1,7 @@
 package com.ai.studyassistant.controller;
 
-import com.ai.studyassistant.dto.SemanticSearchRequest;
-import com.ai.studyassistant.dto.SemanticSearchResponse;
+import com.ai.studyassistant.dto.search.SemanticSearchRequest;
+import com.ai.studyassistant.dto.search.SemanticSearchResponse;
 import com.ai.studyassistant.service.SemanticSearchService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

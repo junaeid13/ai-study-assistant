@@ -1,7 +1,7 @@
 package com.ai.studyassistant.service;
 
-import com.ai.studyassistant.dto.SemanticSearchRequest;
-import com.ai.studyassistant.dto.SemanticSearchResponse;
+import com.ai.studyassistant.dto.search.SemanticSearchRequest;
+import com.ai.studyassistant.dto.search.SemanticSearchResponse;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 

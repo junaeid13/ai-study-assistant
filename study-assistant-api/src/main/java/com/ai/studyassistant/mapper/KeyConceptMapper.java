@@ -1,6 +1,6 @@
 package com.ai.studyassistant.mapper;
 
-import com.ai.studyassistant.dto.KeyConceptResponse;
+import com.ai.studyassistant.dto.study.KeyConceptResponse;
 import com.ai.studyassistant.entity.Document;
 import com.ai.studyassistant.entity.KeyConcept;
 import org.springframework.stereotype.Component;

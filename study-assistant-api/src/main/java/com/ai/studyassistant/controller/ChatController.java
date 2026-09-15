@@ -1,7 +1,7 @@
 package com.ai.studyassistant.controller;
 
-import com.ai.studyassistant.dto.ChatRequest;
-import com.ai.studyassistant.dto.ChatResponse;
+import com.ai.studyassistant.dto.chat.ChatRequest;
+import com.ai.studyassistant.dto.chat.ChatResponse;
 import com.ai.studyassistant.service.ChatService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

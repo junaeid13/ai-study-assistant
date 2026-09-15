@@ -1,14 +1,13 @@
 package com.ai.studyassistant.service;
 
-import com.ai.studyassistant.dto.FlashcardRequest;
-import com.ai.studyassistant.dto.FlashcardResponse;
+import com.ai.studyassistant.dto.study.flashcard.FlashcardRequest;
+import com.ai.studyassistant.dto.study.flashcard.FlashcardResponse;
 import com.ai.studyassistant.entity.Document;
 import com.ai.studyassistant.entity.Flashcard;
 import com.ai.studyassistant.mapper.FlashcardMapper;
 import com.ai.studyassistant.repository.DocumentRepository;
 import com.ai.studyassistant.repository.FlashcardRepository;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import java.util.List;
 

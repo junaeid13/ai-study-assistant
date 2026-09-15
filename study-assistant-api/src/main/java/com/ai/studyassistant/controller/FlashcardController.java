@@ -1,6 +1,6 @@
 package com.ai.studyassistant.controller;
 
-import com.ai.studyassistant.dto.FlashcardResponse;
+import com.ai.studyassistant.dto.study.flashcard.FlashcardResponse;
 import com.ai.studyassistant.service.FlashcardService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

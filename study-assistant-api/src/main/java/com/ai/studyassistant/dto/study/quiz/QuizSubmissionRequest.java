@@ -1,4 +1,6 @@
-package com.ai.studyassistant.dto;
+package com.ai.studyassistant.dto.study.quiz;
+
+import com.ai.studyassistant.dto.answer.AnswerRequest;
 
 import java.util.List;
 

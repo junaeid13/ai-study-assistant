@@ -1,8 +1,8 @@
 package com.ai.studyassistant.service;
 
-import com.ai.studyassistant.dto.ChatRequest;
-import com.ai.studyassistant.dto.ChatResponse;
-import com.ai.studyassistant.dto.PythonChatRequest;
+import com.ai.studyassistant.dto.chat.ChatRequest;
+import com.ai.studyassistant.dto.chat.ChatResponse;
+import com.ai.studyassistant.dto.chat.PythonChatRequest;
 import org.springframework.stereotype.Service;
 
 @Service

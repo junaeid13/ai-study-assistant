@@ -1,4 +1,4 @@
-package com.ai.studyassistant.dto;
+package com.ai.studyassistant.dto.chat;
 
 public record PythonChatRequest(
         Long documentId,

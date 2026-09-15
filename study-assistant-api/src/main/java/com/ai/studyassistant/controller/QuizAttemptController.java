@@ -1,7 +1,7 @@
 package com.ai.studyassistant.controller;
 
-import com.ai.studyassistant.dto.QuizResultResponse;
-import com.ai.studyassistant.dto.QuizSubmissionRequest;
+import com.ai.studyassistant.dto.study.quiz.QuizResultResponse;
+import com.ai.studyassistant.dto.study.quiz.QuizSubmissionRequest;
 import com.ai.studyassistant.service.QuizAttemptService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

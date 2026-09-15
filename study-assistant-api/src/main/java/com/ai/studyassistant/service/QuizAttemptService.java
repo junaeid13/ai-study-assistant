@@ -1,8 +1,8 @@
 package com.ai.studyassistant.service;
 
-import com.ai.studyassistant.dto.AnswerRequest;
-import com.ai.studyassistant.dto.QuizResultResponse;
-import com.ai.studyassistant.dto.QuizSubmissionRequest;
+import com.ai.studyassistant.dto.answer.AnswerRequest;
+import com.ai.studyassistant.dto.study.quiz.QuizResultResponse;
+import com.ai.studyassistant.dto.study.quiz.QuizSubmissionRequest;
 import com.ai.studyassistant.entity.Document;
 import com.ai.studyassistant.entity.Quiz;
 import com.ai.studyassistant.entity.QuizAttempt;
@@ -12,9 +12,6 @@ import com.ai.studyassistant.repository.QuizAttemptRepository;
 import com.ai.studyassistant.repository.QuizRepository;
 import com.ai.studyassistant.repository.UserRepository;
 import com.ai.studyassistant.security.JwtUtil;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

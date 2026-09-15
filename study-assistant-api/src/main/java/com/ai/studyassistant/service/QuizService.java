@@ -1,16 +1,13 @@
 package com.ai.studyassistant.service;
 
-import com.ai.studyassistant.dto.QuizRequest;
-import com.ai.studyassistant.dto.QuizResponse;
+import com.ai.studyassistant.dto.study.quiz.QuizRequest;
+import com.ai.studyassistant.dto.study.quiz.QuizResponse;
 import com.ai.studyassistant.entity.Document;
 import com.ai.studyassistant.entity.Quiz;
 import com.ai.studyassistant.repository.DocumentRepository;
 import com.ai.studyassistant.repository.QuizRepository;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
