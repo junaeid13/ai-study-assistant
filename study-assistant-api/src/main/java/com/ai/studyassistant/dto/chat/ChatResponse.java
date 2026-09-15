@@ -1,4 +1,6 @@
-package com.ai.studyassistant.dto;
+package com.ai.studyassistant.dto.chat;
+
+import com.ai.studyassistant.dto.search.SemanticSearchResponse;
 
 import java.util.List;
 

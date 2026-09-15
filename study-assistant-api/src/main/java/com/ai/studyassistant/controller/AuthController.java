@@ -1,14 +1,11 @@
 package com.ai.studyassistant.controller;
 
-import com.ai.studyassistant.dto.AuthResponse;
-import com.ai.studyassistant.dto.LoginRequest;
-import com.ai.studyassistant.dto.RegisterRequest;
-import com.ai.studyassistant.security.JwtUtil;
+import com.ai.studyassistant.dto.auth.AuthResponse;
+import com.ai.studyassistant.dto.auth.LoginRequest;
+import com.ai.studyassistant.dto.auth.RegisterRequest;
 import com.ai.studyassistant.service.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")

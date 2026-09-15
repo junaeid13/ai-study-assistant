@@ -1,8 +1,7 @@
 package com.ai.studyassistant.controller;
 
-import com.ai.studyassistant.dto.DocumentResponse;
+import com.ai.studyassistant.dto.document.DocumentResponse;
 import com.ai.studyassistant.entity.Document;
-import com.ai.studyassistant.entity.User;
 import com.ai.studyassistant.security.JwtUtil;
 import com.ai.studyassistant.service.DocumentService;
 import org.springframework.http.ResponseEntity;

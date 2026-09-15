@@ -1,11 +1,10 @@
 package com.ai.studyassistant.service;
 
-import com.ai.studyassistant.dto.DocumentResponse;
+import com.ai.studyassistant.dto.document.DocumentResponse;
 import com.ai.studyassistant.entity.Document;
 import com.ai.studyassistant.entity.User;
 import com.ai.studyassistant.repository.DocumentRepository;
 import com.ai.studyassistant.repository.UserRepository;
-import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.json.JSONObject;

@@ -1,14 +1,13 @@
 package com.ai.studyassistant.service;
 
-import com.ai.studyassistant.dto.KeyConceptRequest;
-import com.ai.studyassistant.dto.KeyConceptResponse;
+import com.ai.studyassistant.dto.study.KeyConceptRequest;
+import com.ai.studyassistant.dto.study.KeyConceptResponse;
 import com.ai.studyassistant.entity.Document;
 import com.ai.studyassistant.entity.KeyConcept;
 import com.ai.studyassistant.mapper.KeyConceptMapper;
 import com.ai.studyassistant.repository.DocumentRepository;
 import com.ai.studyassistant.repository.KeyConceptRepository;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import java.util.List;
 

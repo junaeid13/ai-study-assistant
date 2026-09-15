@@ -1,7 +1,7 @@
 package com.ai.studyassistant.service;
 
-import com.ai.studyassistant.dto.LoginRequest;
-import com.ai.studyassistant.dto.RegisterRequest;
+import com.ai.studyassistant.dto.auth.LoginRequest;
+import com.ai.studyassistant.dto.auth.RegisterRequest;
 import com.ai.studyassistant.entity.User;
 import com.ai.studyassistant.repository.UserRepository;
 import com.ai.studyassistant.security.JwtUtil;

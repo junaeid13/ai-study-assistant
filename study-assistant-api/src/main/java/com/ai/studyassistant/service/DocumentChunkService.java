@@ -1,7 +1,7 @@
 package com.ai.studyassistant.service;
 
-import com.ai.studyassistant.dto.EmbeddingRequest;
-import com.ai.studyassistant.dto.EmbeddingResponse;
+import com.ai.studyassistant.dto.embedding.EmbeddingRequest;
+import com.ai.studyassistant.dto.embedding.EmbeddingResponse;
 import com.ai.studyassistant.entity.Document;
 import com.ai.studyassistant.entity.DocumentChunk;
 import com.ai.studyassistant.repository.DocumentChunkRepository;

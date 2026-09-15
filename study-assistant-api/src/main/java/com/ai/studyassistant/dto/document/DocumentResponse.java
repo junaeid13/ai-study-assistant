@@ -1,4 +1,4 @@
-package com.ai.studyassistant.dto;
+package com.ai.studyassistant.dto.document;
 
 public record DocumentResponse(
         Long id,

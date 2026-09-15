@@ -1,18 +1,15 @@
 package com.ai.studyassistant.service;
 
-import com.ai.studyassistant.dto.StudyNoteRequest;
-import com.ai.studyassistant.dto.StudyNoteResponse;
+import com.ai.studyassistant.dto.study.StudyNoteRequest;
+import com.ai.studyassistant.dto.study.StudyNoteResponse;
 import com.ai.studyassistant.entity.Document;
 import com.ai.studyassistant.entity.StudyNote;
 import com.ai.studyassistant.mapper.StudyNoteMapper;
 import com.ai.studyassistant.repository.DocumentRepository;
 import com.ai.studyassistant.repository.StudyNoteRepository;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 
 import java.util.List;

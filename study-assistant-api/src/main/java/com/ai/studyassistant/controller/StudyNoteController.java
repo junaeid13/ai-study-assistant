@@ -1,9 +1,8 @@
 package com.ai.studyassistant.controller;
 
-import com.ai.studyassistant.dto.StudyNoteResponse;
+import com.ai.studyassistant.dto.study.StudyNoteResponse;
 import com.ai.studyassistant.service.StudyNoteService;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;

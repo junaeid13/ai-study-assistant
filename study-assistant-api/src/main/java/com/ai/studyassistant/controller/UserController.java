@@ -1,7 +1,7 @@
 package com.ai.studyassistant.controller;
 
 
-import com.ai.studyassistant.dto.UserResponse;
+import com.ai.studyassistant.dto.user.UserResponse;
 import com.ai.studyassistant.entity.User;
 import com.ai.studyassistant.repository.UserRepository;
 import com.ai.studyassistant.security.JwtUtil;
@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")

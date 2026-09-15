@@ -1,4 +1,4 @@
-package com.ai.studyassistant.dto;
+package com.ai.studyassistant.dto.study.quiz;
 
 public record QuizResponse(
         Long id,

@@ -1,6 +1,6 @@
 package com.ai.studyassistant.mapper;
 
-import com.ai.studyassistant.dto.FlashcardResponse;
+import com.ai.studyassistant.dto.study.flashcard.FlashcardResponse;
 import com.ai.studyassistant.entity.Document;
 import com.ai.studyassistant.entity.Flashcard;
 import org.springframework.stereotype.Component;
