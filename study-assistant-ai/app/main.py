@@ -379,9 +379,10 @@ def chat_with_document(request: ChatRequest):
             Answer:
         """ 
 
-    answer = {
-        "Relevant Information": context,
-    }
+    answer = llm_service.generate_answer(
+        question=request.question,
+        context=context
+    )
     return {
         "answer": answer,
         "sources": results

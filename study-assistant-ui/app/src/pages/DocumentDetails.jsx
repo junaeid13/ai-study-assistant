@@ -9,7 +9,7 @@ import StudyNoteList from "../components/StudyNoteList";
 import { getStudyNotes } from "../services/api";
 import keyConceptList from "../components/KeyConceptList";
 import {generateKeyConcepts, getKeyConcepts} from "../services/api";
-
+import ChatWithPdf from "../components/ChatWithPdf";
 
 function DocumentDetails() {
 
@@ -226,6 +226,10 @@ function DocumentDetails() {
           quizzes={quizzes} 
           documentId={id}
       />
+
+      <hr/>
+      <ChatWithPdf documentId={id} />
+      
         
     </div>
   );

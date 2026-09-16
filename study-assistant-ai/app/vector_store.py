@@ -25,7 +25,7 @@ class VectorStore:
 
         embeddings = self.model.encode(chunks).tolist()
         ids = [
-            f"{document_id}_chunk_{index}" 
+            f"{document_id}-{index}" 
             for index in range(len(chunks))
         ]
 
@@ -47,7 +47,8 @@ class VectorStore:
             self, 
             document_id:int,
             query:str,
-            top_k:int=5
+            top_k:int=5,
+            distance_threshold:float=0.8
             ):
         query_embedding = self.embedding_model.encode(
             [query]
@@ -66,10 +67,16 @@ class VectorStore:
         search_results = []
 
         for i in range(len(documents)):
+            if distances[i] > distance_threshold:
+                continue
+            metadata = metadatas[i]
             search_results.append({
-                "document": documents[i],
+                "context": documents[i],
                 "distance": distances[i],
-                "metadata": metadatas[i]
+                "metadata": {
+                    "documentId": metadata["document_id"],
+                    "chunkIndex": metadata["chunk_index"]
+                }
             })
 
         return search_results
