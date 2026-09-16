@@ -3,20 +3,35 @@ package com.ai.studyassistant.service;
 import com.ai.studyassistant.dto.chat.ChatRequest;
 import com.ai.studyassistant.dto.chat.ChatResponse;
 import com.ai.studyassistant.dto.chat.PythonChatRequest;
+import com.ai.studyassistant.repository.DocumentRepository;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ChatService {
     private final PythonApiClient pythonApiClient;
+    private final DocumentRepository documentRepository;
 
-    public ChatService(PythonApiClient pythonApiClient) {
+    public ChatService(PythonApiClient pythonApiClient, DocumentRepository documentRepository) {
         this.pythonApiClient = pythonApiClient;
+        this.documentRepository = documentRepository;
     }
 
     public ChatResponse chat(
             Long documentId,
-            ChatRequest chatRequest
+            ChatRequest chatRequest,
+            String username
     ) {
+
+        documentRepository.findByIdAndUsername(
+                documentId,
+                username
+        ).orElseThrow(
+                ()-> new RuntimeException(
+                        "Document not found."
+                )
+        );
+
+
         if (documentId == null) {
             throw new IllegalArgumentException("documentId is null");
         }
