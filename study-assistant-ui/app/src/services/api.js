@@ -7,6 +7,20 @@ const api = axios.create({
 baseURL: "http://localhost:8080/api"
 });
 
+export const chatWithDocument = async(
+  documentId,
+  question,
+  top_k = 5
+)=> {
+  const response = await api.post(
+    `/documents/${documentId}/chat`,
+    {
+      question,
+      top_k
+    }
+  );
+  return response.data;
+};
 
 export const generateKeyConcepts = async (documentId) => {
   const response = await api.post(
