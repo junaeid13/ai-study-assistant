@@ -4,6 +4,7 @@ import com.ai.studyassistant.dto.search.SemanticSearchRequest;
 import com.ai.studyassistant.dto.search.SemanticSearchResponse;
 import com.ai.studyassistant.service.SemanticSearchService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,8 +24,11 @@ public class SemanticSearchController {
     @PostMapping("/{documentId}/search")
     public ResponseEntity<List<SemanticSearchResponse>> search(
             @PathVariable("documentId") Long documentId,
-            @RequestBody SemanticSearchRequest request
-    ){
+            @RequestBody SemanticSearchRequest request,
+            Authentication authentication
+    ) {
+
+        String username = authentication.getName();
         SemanticSearchRequest searchRequest =
                 new SemanticSearchRequest(
                         documentId,
@@ -32,6 +36,10 @@ public class SemanticSearchController {
                         request.topk()
                 );
 
-        return ResponseEntity.ok(semanticSearchService.search(searchRequest));
+        return ResponseEntity.ok(semanticSearchService.search(
+                documentId,
+                searchRequest,
+                username
+        ));
     }
 }
