@@ -6,6 +6,7 @@ from sumy.summarizers.lsa import LsaSummarizer
 from sumy.parsers.plaintext import PlaintextParser
 from sumy.nlp.tokenizers import Tokenizer
 from study_assistant_ai.app.vector_store import VectorStore
+from study_assistant_ai.app.llm_service import llm_service
 
 
 
@@ -357,27 +358,15 @@ def chat_with_document(request: ChatRequest):
             "sources": []
         }
 
+    extended_results = vector_store.expand_context(
+        document_id=request.document_id,
+        search_results=results,
+        neighbor_count=1
+    )
+
     context = "\n\n".join(
         result["context"] for result in results
         )
-
-    prompt = f"""
-            You are an AI study assistant.
-
-            Answer the user's question using ONLY the information
-            provided in the document context below.
-
-            If the answer cannot be found in the context,
-            say that the information is not available in the document.
-
-            Document context:
-            {context}
-
-            User question:
-            {request.question}
-
-            Answer:
-        """ 
 
     answer = llm_service.generate_answer(
         question=request.question,
