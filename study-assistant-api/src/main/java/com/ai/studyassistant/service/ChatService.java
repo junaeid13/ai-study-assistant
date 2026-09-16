@@ -22,7 +22,7 @@ public class ChatService {
             String username
     ) {
 
-        documentRepository.findByIdAndUsername(
+        documentRepository.findByIdAndUserUsername(
                 documentId,
                 username
         ).orElseThrow(

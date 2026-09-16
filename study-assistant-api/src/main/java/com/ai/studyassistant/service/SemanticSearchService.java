@@ -2,6 +2,7 @@ package com.ai.studyassistant.service;
 
 import com.ai.studyassistant.dto.search.SemanticSearchRequest;
 import com.ai.studyassistant.dto.search.SemanticSearchResponse;
+import com.ai.studyassistant.repository.DocumentRepository;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 
@@ -11,16 +12,28 @@ import java.util.List;
 public class SemanticSearchService {
 
     private final PythonApiClient pythonApiClient;
+    private final DocumentRepository documentRepository;
 
     public SemanticSearchService(
-            PythonApiClient pythonApiClient
-    ) {
+            PythonApiClient pythonApiClient,
+            DocumentRepository documentRepository) {
         this.pythonApiClient = pythonApiClient;
+        this.documentRepository = documentRepository;
     }
 
     public List<SemanticSearchResponse> search(
-            SemanticSearchRequest request
+            Long documentId,
+            SemanticSearchRequest request,
+            String username
     ) {
+        documentRepository.findByIdAndUserUsername(
+                documentId,
+                username
+        ).orElseThrow(
+                () -> new RuntimeException(
+                        "Document not found."
+                )
+        );
         if (request.query() == null || request.query().isBlank()) {
             throw new IllegalArgumentException(
                     "Search query cannot be empty"
