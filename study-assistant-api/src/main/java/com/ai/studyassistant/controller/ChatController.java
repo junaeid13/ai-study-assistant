@@ -4,6 +4,7 @@ import com.ai.studyassistant.dto.chat.ChatRequest;
 import com.ai.studyassistant.dto.chat.ChatResponse;
 import com.ai.studyassistant.service.ChatService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,12 +20,15 @@ public class ChatController {
     @PostMapping("/{documentId}/chat")
     public ResponseEntity<ChatResponse> chat(
             @PathVariable Long documentId,
-            @RequestBody ChatRequest chatRequest
+            @RequestBody ChatRequest chatRequest,
+            Authentication authentication
     ) {
+        String username = authentication.getName();
         return ResponseEntity.ok(
                 chatService.chat(
                         documentId,
-                        chatRequest
+                        chatRequest,
+                        username
                 )
         );
     }
