@@ -69,11 +69,14 @@ class VectorStore:
         for i in range(len(documents)):
             if distances[i] > distance_threshold:
                 continue
-            
+            metadata = metadatas[i]
             search_results.append({
-                "document": documents[i],
+                "context": documents[i],
                 "distance": distances[i],
-                "metadata": metadatas[i]
+                "metadata": {
+                    "documentId": metadata["document_id"],
+                    "chunkIndex": metadata["chunk_index"]
+                }
             })
 
         return search_results
