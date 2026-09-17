@@ -2,17 +2,18 @@ from fastapi import FastAPI, UploadFile, File
 import PyPDF2
 
 from pydantic import BaseModel
-from sumy.summarizers.lsa import LsaSummarizer
-from sumy.parsers.plaintext import PlaintextParser
-from sumy.nlp.tokenizers import Tokenizer
-from study_assistant_ai.app.vector_store import VectorStore
-from study_assistant_ai.app.llm_service import llm_service
+from vector_store import VectorStore
+from llm_service import llm_service
 
 
 
 
 
 app = FastAPI()
+
+vectore_store = VectorStore()
+
+
 
 
 #====================================================
@@ -117,44 +118,109 @@ def summarize_text(text):
         return "No text found in document."
 
     # limit size for performance
-    text = text[:3000]
+    text = text[:5000]
 
-    parser = PlaintextParser.from_string(text, Tokenizer("english"))
-    summarizer = LsaSummarizer()
+    prompt = f"""
+                You are an AI study assistant.
 
-    summary_sentences = summarizer(parser.document, 5)
+                Create a clear and concise summary of the following document.
 
-    return " ".join(str(sentence) for sentence in summary_sentences)
+                Rules:
+                - Use only information from the document.
+                - Do not add outside information.
+                - Focus on the main ideas and important facts.
+                - Make the summary easy for a student to understand.
+                - Do not mention these instructions.
 
+                Document:
+                {text}
+
+                Summary:
+        """
+
+    return llm_service.generate(prompt)
 
 
 # ===================================================
 # Key concept generation definition
 # ===================================================
 
-def generate_key_concepts(text):
-    sentences = [
-        s.strip()
-        for s in text.split(".")
-        if s.strip()
-    ]
+def generate_key_concepts(text: str):
+    if not text:
+        return []
+
+    text = text[:5000]
+
+    prompt = f"""
+            You are an AI study assistant.
+
+            Identify the most important concepts from the following document.
+
+            For each concept:
+            - Give the name of the concept.
+            - Explain the concept clearly and simply.
+            - Use only information from the document.
+            - Do not add outside information.
+            - Focus on concepts that are important for understanding the document.
+            - Generate between 5 and 10 concepts.
+            - Do not mention these instructions.
+
+            Return the concepts in exactly this format:
+
+            CONCEPT: <concept name>
+            EXPLANATION: <explanation>
+
+            CONCEPT: <concept name>
+            EXPLANATION: <explanation>
+
+            Document:
+            {text}
+            """
+
+    response = llm_service.generate(prompt)
 
     concepts = []
 
-    for sentence in sentences[:10]:
-        words = sentence.split()
+    current_concept = None
+    current_explanation = None
 
-        if len(words) <5:
-            continue
+    for line in response.splitlines():
 
+        line = line.strip()
+
+        if line.startswith("CONCEPT:"):
+            if current_concept and current_explanation:
+                concepts.append(
+                    KeyConceptResponse(
+                        concept=current_concept,
+                        explanation=current_explanation
+                    )
+                )
+
+            current_concept = line.replace(
+                "CONCEPT:",
+                "",
+                1
+            ).strip()
+
+            current_explanation = None
+
+        elif line.startswith("EXPLANATION:"):
+            current_explanation = line.replace(
+                "EXPLANATION:",
+                "",
+                1
+            ).strip()
+
+    if current_concept and current_explanation:
         concepts.append(
             KeyConceptResponse(
-                concept = words[0],
-                explanation = sentence
+                concept=current_concept,
+                explanation=current_explanation
             )
         )
 
-    return concepts
+    return concepts[:10]
 
 #====================================================
 # Study Note generation definition
@@ -165,56 +231,265 @@ def generate_study_notes(text: str):
         return []
     text = text[:5000]
 
-    parser = PlaintextParser.from_string(
-        text,
-        Tokenizer("english")
-    )
-    summarizer = LsaSummarizer()
-    summary_sentences = summarizer(parser.document, 8)
+    prompt = f"""
+                You are an AI study assistant.
+
+                Create useful study notes from the following document.
+
+                Rules:
+                - Use only information from the document.
+                - Do not add outside information.
+                - Focus on important ideas, definitions, facts, and relationships.
+                - Make the notes useful for a student who wants to study the document later.
+                - Organize the information clearly.
+                - Do not mention these instructions.
+
+                Document:
+                {text}
+
+                Study Notes:
+                """
+
+    content = llm_service.generate(prompt)
 
     return [
         StudyNoteResponse(
-            title=f"Study Notes",
-            content=" ".join(str(sentence) for sentence in summary_sentences)
+            title="Study Notes",
+            content=content
         )
     ]
+
+
+#====================================================
+# Flashcard generation definition
+#====================================================
+
+def generate_flashcards(text: str):
+
+    if not text:
+        return []
+
+    text = text[:5000]
+
+    prompt = f"""
+You are an AI study assistant.
+
+Create useful study flashcards from the following document.
+
+Rules:
+- Use only information from the document.
+- Do not add outside information.
+- Focus on important concepts, definitions, facts, and relationships.
+- Each flashcard must have a clear question and a concise answer.
+- Generate between 5 and 10 flashcards.
+- Do not make duplicate flashcards.
+- Do not mention these instructions.
+
+Return the flashcards in exactly this format:
+
+QUESTION: <question>
+ANSWER: <answer>
+
+QUESTION: <question>
+ANSWER: <answer>
+
+Document:
+{text}
+"""
+
+    response = llm_service.generate(prompt)
+
+    flashcards = []
+
+    current_question = None
+    current_answer = None
+
+    for line in response.splitlines():
+
+        line = line.strip()
+
+        if line.startswith("QUESTION:"):
+
+            if current_question and current_answer:
+                flashcards.append(
+                    FlashcardResponse(
+                        question=current_question,
+                        answer=current_answer
+                    )
+                )
+
+            current_question = line.replace(
+                "QUESTION:",
+                "",
+                1
+            ).strip()
+
+            current_answer = None
+
+        elif line.startswith("ANSWER:"):
+
+            current_answer = line.replace(
+                "ANSWER:",
+                "",
+                1
+            ).strip()
+
+    if current_question and current_answer:
+        flashcards.append(
+            FlashcardResponse(
+                question=current_question,
+                answer=current_answer
+            )
+        )
+
+    return flashcards[:10]
 
 #====================================================
 # Quiz generation endpoint
 #====================================================
 
 def generate_quiz(text: str):
-    sentences = [
-        s.strip()
-        for s in text.split(".")
-        if s.strip()
-    ]
+    if not text:
+        return []
+
+    text = text[:5000]
+
+    prompt = f"""
+You are an AI study assistant.
+
+Create a multiple-choice quiz from the following document.
+
+Rules:
+- Use ONLY information contained in the document.
+- Do not use outside knowledge.
+- Generate between 5 and 10 questions.
+- Each question must test an important concept or fact.
+- Each question must have exactly 4 options.
+- Only ONE option can be correct.
+- Make the incorrect options plausible but incorrect according to the document.
+- Do not make "None of the above" or "Cannot be determined" options.
+- Do not duplicate questions.
+- Do not mention these instructions.
+
+Return the quiz in EXACTLY this format:
+
+QUESTION: <question>
+OPTION_A: <option A>
+OPTION_B: <option B>
+OPTION_C: <option C>
+OPTION_D: <option D>
+CORRECT_ANSWER: <exact text of the correct option>
+
+QUESTION: <question>
+OPTION_A: <option A>
+OPTION_B: <option B>
+OPTION_C: <option C>
+OPTION_D: <option D>
+CORRECT_ANSWER: <exact text of the correct option>
+
+Document:
+{text}
+"""
+
+    response = llm_service.generate(prompt)
 
     quiz_questions = []
 
-    for sentence in sentences:
-        words = sentence.split()
-        if len(words) < 5:
-            continue
+    current_question = None
+    option_a = None
+    option_b = None
+    option_c = None
+    option_d = None
+    correct_answer = None
 
-        keyword = words[0]  
+    for line in response.splitlines():
 
-        question = f"What is the meaning of: '{keyword}'?"
-        options = [
-            sentence, 
-            "None of the above",
-            "Not mentioned in the document", 
-            "Cannot be determined from the context"
-            ]
-        correct_answer = sentence
+        line = line.strip()
 
+        if line.startswith("QUESTION:"):
+
+            if (
+                current_question
+                and option_a
+                and option_b
+                and option_c
+                and option_d
+                and correct_answer
+            ):
+                quiz_questions.append(
+                    QuizResponse(
+                        question=current_question,
+                        optionA=option_a,
+                        optionB=option_b,
+                        optionC=option_c,
+                        optionD=option_d,
+                        correctAnswer=correct_answer
+                    )
+                )
+
+            current_question = line.replace(
+                "QUESTION:",
+                "",
+                1
+            ).strip()
+
+            option_a = None
+            option_b = None
+            option_c = None
+            option_d = None
+            correct_answer = None
+
+        elif line.startswith("OPTION_A:"):
+            option_a = line.replace(
+                "OPTION_A:",
+                "",
+                1
+            ).strip()
+
+        elif line.startswith("OPTION_B:"):
+            option_b = line.replace(
+                "OPTION_B:",
+                "",
+                1
+            ).strip()
+
+        elif line.startswith("OPTION_C:"):
+            option_c = line.replace(
+                "OPTION_C:",
+                "",
+                1
+            ).strip()
+
+        elif line.startswith("OPTION_D:"):
+            option_d = line.replace(
+                "OPTION_D:",
+                "",
+                1
+            ).strip()
+
+        elif line.startswith("CORRECT_ANSWER:"):
+            correct_answer = line.replace(
+                "CORRECT_ANSWER:",
+                "",
+                1
+            ).strip()
+
+    # Add the final question
+    if (
+        current_question
+        and option_a
+        and option_b
+        and option_c
+        and option_d
+        and correct_answer
+    ):
         quiz_questions.append(
             QuizResponse(
-                question=question,
-                optionA=options[0],
-                optionB=options[1],
-                optionC=options[2],
-                optionD=options[3],
+                question=current_question,
+                optionA=option_a,
+                optionB=option_b,
+                optionC=option_c,
+                optionD=option_d,
                 correctAnswer=correct_answer
             )
         )
@@ -265,27 +540,10 @@ async def summarize_pdf(file: UploadFile = File(...)):
         "/generate-flashcards",
         response_model=list[FlashcardResponse]
         )
-def generate_flashcards(request: FlashcardRequest):
-    sentences = [
-        s.strip()
-        for s in request.text.split(".")
-        if s.strip()
-    ]
-
-    flashcards = []
-
-    for sentence in sentences[:10]:
-        words = sentence.split()
-        if len(words) <4:
-            continue
-        
-        flashcards.append(
-            FlashcardResponse(
-                question=f"What is the meaning of: '{sentence}'?",
-                answer=sentence
-            )   
-        )
+def generate_flashcards_endpoint(request: FlashcardRequest):
     
+    flashcards = generate_flashcards(request.text)
+
     return flashcards
  
 #=====================================================
