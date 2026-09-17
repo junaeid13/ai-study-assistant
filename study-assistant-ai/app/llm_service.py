@@ -55,4 +55,4 @@ class LLMService:
         )
         return response["message"]["content"]
 
-    llm_service = LLMService()
+llm_service = LLMService()

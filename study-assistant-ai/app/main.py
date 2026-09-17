@@ -5,14 +5,18 @@ from pydantic import BaseModel
 from sumy.summarizers.lsa import LsaSummarizer
 from sumy.parsers.plaintext import PlaintextParser
 from sumy.nlp.tokenizers import Tokenizer
-from study_assistant_ai.app.vector_store import VectorStore
-from study_assistant_ai.app.llm_service import llm_service
+from vector_store import VectorStore
+from llm_service import llm_service
 
 
 
 
 
 app = FastAPI()
+
+vectore_store = VectorStore()
+
+
 
 
 #====================================================
