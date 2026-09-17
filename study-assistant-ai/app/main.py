@@ -117,15 +117,27 @@ def summarize_text(text):
         return "No text found in document."
 
     # limit size for performance
-    text = text[:3000]
+    text = text[:5000]
 
-    parser = PlaintextParser.from_string(text, Tokenizer("english"))
-    summarizer = LsaSummarizer()
+    prompt = f"""
+                You are an AI study assistant.
 
-    summary_sentences = summarizer(parser.document, 5)
+                Create a clear and concise summary of the following document.
 
-    return " ".join(str(sentence) for sentence in summary_sentences)
+                Rules:
+                - Use only information from the document.
+                - Do not add outside information.
+                - Focus on the main ideas and important facts.
+                - Make the summary easy for a student to understand.
+                - Do not mention these instructions.
 
+                Document:
+                {text}
+
+                Summary:
+        """
+
+    return llm_service.generate(prompt)
 
 
 # ===================================================
