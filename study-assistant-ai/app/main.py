@@ -14,6 +14,16 @@ from study_assistant_ai.app.llm_service import llm_service
 
 app = FastAPI()
 
+
+#====================================================
+# Request model for Evaluation
+#====================================================
+
+class EvaluationQuestion(BaseModel):
+    document_id: int
+    question: str
+    expected_chunk_index: int
+
 #====================================================
 # Request model for Chat
 #====================================================
@@ -377,4 +387,32 @@ def chat_with_document(request: ChatRequest):
     return {
         "answer": answer,
         "sources": results
+    }
+
+@app.post("/evaluate-retrieval")
+def evaluate_retrieval(request: EvaluationQuestion):
+    results = vector_store.search(
+        document_id=request.document_id,
+        query=request.question,
+        top_k=5
+    )
+
+    if not results:
+        return {
+            "message": "No relevant information found in the document.",
+            "expected_chunk_index": request.expected_chunk_index,
+            "retrieved_chunk_indices": []
+        }
+
+    retrieved_chunk_indices = [
+        result['metadata']['chunkIndex'] for result in results
+    ]
+
+    is_expected_chunk_retrieved = request.expected_chunk_index in retrieved_chunk_indices
+
+    return {
+        "message": "Evaluation completed.",
+        "expected_chunk_index": request.expected_chunk_index,
+        "retrieved_chunk_indices": retrieved_chunk_indices,
+        "is_expected_chunk_retrieved": is_expected_chunk_retrieved
     }
