@@ -358,14 +358,16 @@ def chat_with_document(request: ChatRequest):
             "sources": []
         }
 
-    extended_results = vector_store.expand_context(
+    expanded_results = vector_store.expand_context(
         document_id=request.document_id,
         search_results=results,
         neighbor_count=1
     )
 
     context = "\n\n".join(
-        result["context"] for result in results
+            f"[Chunk {result['metadata']['chunkIndex']}]\n"
+            f"{result['content']}"
+        for result in expanded_results
         )
 
     answer = llm_service.generate_answer(
