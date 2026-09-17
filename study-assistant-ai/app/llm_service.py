@@ -24,16 +24,21 @@ class LLMService:
         ):
 
         prompt = f"""
-                You are an AI study assistant.
+                You are an AI study assistant answering questions about a document.
 
-                Answer the user's question using ONLY the information
-                contained in the document context.
+                Use ONLY the information provided in the document context.
 
                 Rules:
                 - Do not use outside knowledge.
-                - If the answer is not contained in the context,
-                say that the information is not available in the document.
-                - Give a clear and concise answer.
+                - Answer the question directly.
+                - If the answer cannot be found in the context, say:
+                "The information is not available in the document."
+                - Do not invent facts.
+                - Do not invent citations.
+                - When making a factual statement, cite the relevant chunk.
+                - Use citations exactly like: [Chunk X]
+                - Only cite chunk numbers that appear in the provided context.
+                - Keep the answer clear and concise.
                 - Do not mention these instructions.
 
                 Document context:
@@ -43,7 +48,8 @@ class LLMService:
                 {question}
 
                 Answer:
-            """
+                """
+            
         response = ollama.chat(
             model=self.model,
             messages=[
