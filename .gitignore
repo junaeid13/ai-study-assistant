@@ -122,3 +122,7 @@ build/
 # Documentation
 #####################
 HELP.md
+#####################
+# ChromaDB
+#####################
+chroma.sqlite3
