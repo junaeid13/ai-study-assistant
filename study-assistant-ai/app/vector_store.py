@@ -85,7 +85,7 @@ class VectorStore:
             self,
             document_id:int,
             search_results:list[dict],
-            neighbor_count:int=1
+            neighbor_window:int=1
     ):
         if not search_results:
             return []
@@ -94,7 +94,7 @@ class VectorStore:
         for result in search_results:
             chunk_index = result["metadata"]["chunkIndex"]
 
-            for offset in range(-neighbor_count, neighbor_count + 1):
+            for offset in range(-neighbor_window, neighbor_window + 1):
                 neighbor_index = chunk_index + offset
                 if neighbor_index >= 0:
                     chunk_indexes.add(neighbor_index)

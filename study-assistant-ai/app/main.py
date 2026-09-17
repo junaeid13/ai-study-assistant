@@ -3,6 +3,7 @@ import PyPDF2
 
 from vector_store import VectorStore
 from llm_service import llm_service
+from reg_service import rag_service
 from content_service import content_service
 from schemas import (
     EvaluationQuestion,
@@ -24,7 +25,7 @@ from schemas import (
 
 app = FastAPI()
 
-vectore_store = VectorStore()
+vector_store = VectorStore()
 
 
 
@@ -161,45 +162,19 @@ def semantic_search(request: SearchRequest):
 
 @app.post("/chat-with-document")
 def chat_with_document(request: ChatRequest):
-    results = vector_store.search(
+    response = rag_service.chat(
         document_id=request.document_id,
-        query=request.question,
+        question=request.question,
         top_k=request.top_k
     )
-
-    if not results:
-        return {
-            "answer": "No relevant information found in the document.",
-            "sources": []
-        }
-
-    expanded_results = vector_store.expand_context(
-        document_id=request.document_id,
-        search_results=results,
-        neighbor_count=1
-    )
-
-    context = "\n\n".join(
-            f"[Chunk {result['metadata']['chunkIndex']}]\n"
-            f"{result['content']}"
-        for result in expanded_results
-        )
-
-    answer = llm_service.generate_answer(
-        question=request.question,
-        context=context
-    )
-    return {
-        "answer": answer,
-        "sources": results
-    }
+    return response
 
 @app.post("/evaluate-retrieval")
 def evaluate_retrieval(request: EvaluationQuestion):
     results = vector_store.search(
         document_id=request.document_id,
         query=request.question,
-        top_k=5
+        top_k=request.top_k
     )
 
     if not results:
