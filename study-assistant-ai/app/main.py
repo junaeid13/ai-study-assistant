@@ -2,9 +2,6 @@ from fastapi import FastAPI, UploadFile, File
 import PyPDF2
 
 from pydantic import BaseModel
-from sumy.summarizers.lsa import LsaSummarizer
-from sumy.parsers.plaintext import PlaintextParser
-from sumy.nlp.tokenizers import Tokenizer
 from vector_store import VectorStore
 from llm_service import llm_service
 
@@ -181,17 +178,31 @@ def generate_study_notes(text: str):
         return []
     text = text[:5000]
 
-    parser = PlaintextParser.from_string(
-        text,
-        Tokenizer("english")
-    )
-    summarizer = LsaSummarizer()
-    summary_sentences = summarizer(parser.document, 8)
+    prompt = f"""
+                You are an AI study assistant.
+
+                Create useful study notes from the following document.
+
+                Rules:
+                - Use only information from the document.
+                - Do not add outside information.
+                - Focus on important ideas, definitions, facts, and relationships.
+                - Make the notes useful for a student who wants to study the document later.
+                - Organize the information clearly.
+                - Do not mention these instructions.
+
+                Document:
+                {text}
+
+                Study Notes:
+                """
+
+    content = llm_service.generate(prompt)
 
     return [
         StudyNoteResponse(
-            title=f"Study Notes",
-            content=" ".join(str(sentence) for sentence in summary_sentences)
+            title="Study Notes",
+            content=content
         )
     ]
 
