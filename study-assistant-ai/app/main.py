@@ -259,6 +259,91 @@ def generate_study_notes(text: str):
         )
     ]
 
+
+#====================================================
+# Flashcard generation definition
+#====================================================
+
+def generate_flashcards(text: str):
+
+    if not text:
+        return []
+
+    text = text[:5000]
+
+    prompt = f"""
+You are an AI study assistant.
+
+Create useful study flashcards from the following document.
+
+Rules:
+- Use only information from the document.
+- Do not add outside information.
+- Focus on important concepts, definitions, facts, and relationships.
+- Each flashcard must have a clear question and a concise answer.
+- Generate between 5 and 10 flashcards.
+- Do not make duplicate flashcards.
+- Do not mention these instructions.
+
+Return the flashcards in exactly this format:
+
+QUESTION: <question>
+ANSWER: <answer>
+
+QUESTION: <question>
+ANSWER: <answer>
+
+Document:
+{text}
+"""
+
+    response = llm_service.generate(prompt)
+
+    flashcards = []
+
+    current_question = None
+    current_answer = None
+
+    for line in response.splitlines():
+
+        line = line.strip()
+
+        if line.startswith("QUESTION:"):
+
+            if current_question and current_answer:
+                flashcards.append(
+                    FlashcardResponse(
+                        question=current_question,
+                        answer=current_answer
+                    )
+                )
+
+            current_question = line.replace(
+                "QUESTION:",
+                "",
+                1
+            ).strip()
+
+            current_answer = None
+
+        elif line.startswith("ANSWER:"):
+
+            current_answer = line.replace(
+                "ANSWER:",
+                "",
+                1
+            ).strip()
+
+    if current_question and current_answer:
+        flashcards.append(
+            FlashcardResponse(
+                question=current_question,
+                answer=current_answer
+            )
+        )
+
+    return flashcards[:10]
+
 #====================================================
 # Quiz generation endpoint
 #====================================================
@@ -345,27 +430,10 @@ async def summarize_pdf(file: UploadFile = File(...)):
         "/generate-flashcards",
         response_model=list[FlashcardResponse]
         )
-def generate_flashcards(request: FlashcardRequest):
-    sentences = [
-        s.strip()
-        for s in request.text.split(".")
-        if s.strip()
-    ]
-
-    flashcards = []
-
-    for sentence in sentences[:10]:
-        words = sentence.split()
-        if len(words) <4:
-            continue
-        
-        flashcards.append(
-            FlashcardResponse(
-                question=f"What is the meaning of: '{sentence}'?",
-                answer=sentence
-            )   
-        )
+def generate_flashcards_endpoint(request: FlashcardRequest):
     
+    flashcards = generate_flashcards(request.text)
+
     return flashcards
  
 #=====================================================
