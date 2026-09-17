@@ -349,37 +349,147 @@ Document:
 #====================================================
 
 def generate_quiz(text: str):
-    sentences = [
-        s.strip()
-        for s in text.split(".")
-        if s.strip()
-    ]
+    if not text:
+        return []
+
+    text = text[:5000]
+
+    prompt = f"""
+You are an AI study assistant.
+
+Create a multiple-choice quiz from the following document.
+
+Rules:
+- Use ONLY information contained in the document.
+- Do not use outside knowledge.
+- Generate between 5 and 10 questions.
+- Each question must test an important concept or fact.
+- Each question must have exactly 4 options.
+- Only ONE option can be correct.
+- Make the incorrect options plausible but incorrect according to the document.
+- Do not make "None of the above" or "Cannot be determined" options.
+- Do not duplicate questions.
+- Do not mention these instructions.
+
+Return the quiz in EXACTLY this format:
+
+QUESTION: <question>
+OPTION_A: <option A>
+OPTION_B: <option B>
+OPTION_C: <option C>
+OPTION_D: <option D>
+CORRECT_ANSWER: <exact text of the correct option>
+
+QUESTION: <question>
+OPTION_A: <option A>
+OPTION_B: <option B>
+OPTION_C: <option C>
+OPTION_D: <option D>
+CORRECT_ANSWER: <exact text of the correct option>
+
+Document:
+{text}
+"""
+
+    response = llm_service.generate(prompt)
 
     quiz_questions = []
 
-    for sentence in sentences:
-        words = sentence.split()
-        if len(words) < 5:
-            continue
+    current_question = None
+    option_a = None
+    option_b = None
+    option_c = None
+    option_d = None
+    correct_answer = None
 
-        keyword = words[0]  
+    for line in response.splitlines():
 
-        question = f"What is the meaning of: '{keyword}'?"
-        options = [
-            sentence, 
-            "None of the above",
-            "Not mentioned in the document", 
-            "Cannot be determined from the context"
-            ]
-        correct_answer = sentence
+        line = line.strip()
 
+        if line.startswith("QUESTION:"):
+
+            if (
+                current_question
+                and option_a
+                and option_b
+                and option_c
+                and option_d
+                and correct_answer
+            ):
+                quiz_questions.append(
+                    QuizResponse(
+                        question=current_question,
+                        optionA=option_a,
+                        optionB=option_b,
+                        optionC=option_c,
+                        optionD=option_d,
+                        correctAnswer=correct_answer
+                    )
+                )
+
+            current_question = line.replace(
+                "QUESTION:",
+                "",
+                1
+            ).strip()
+
+            option_a = None
+            option_b = None
+            option_c = None
+            option_d = None
+            correct_answer = None
+
+        elif line.startswith("OPTION_A:"):
+            option_a = line.replace(
+                "OPTION_A:",
+                "",
+                1
+            ).strip()
+
+        elif line.startswith("OPTION_B:"):
+            option_b = line.replace(
+                "OPTION_B:",
+                "",
+                1
+            ).strip()
+
+        elif line.startswith("OPTION_C:"):
+            option_c = line.replace(
+                "OPTION_C:",
+                "",
+                1
+            ).strip()
+
+        elif line.startswith("OPTION_D:"):
+            option_d = line.replace(
+                "OPTION_D:",
+                "",
+                1
+            ).strip()
+
+        elif line.startswith("CORRECT_ANSWER:"):
+            correct_answer = line.replace(
+                "CORRECT_ANSWER:",
+                "",
+                1
+            ).strip()
+
+    # Add the final question
+    if (
+        current_question
+        and option_a
+        and option_b
+        and option_c
+        and option_d
+        and correct_answer
+    ):
         quiz_questions.append(
             QuizResponse(
-                question=question,
-                optionA=options[0],
-                optionB=options[1],
-                optionC=options[2],
-                optionD=options[3],
+                question=current_question,
+                optionA=option_a,
+                optionB=option_b,
+                optionC=option_c,
+                optionD=option_d,
                 correctAnswer=correct_answer
             )
         )
