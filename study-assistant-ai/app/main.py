@@ -6,12 +6,23 @@ from sumy.summarizers.lsa import LsaSummarizer
 from sumy.parsers.plaintext import PlaintextParser
 from sumy.nlp.tokenizers import Tokenizer
 from study_assistant_ai.app.vector_store import VectorStore
+from study_assistant_ai.app.llm_service import llm_service
 
 
 
 
 
 app = FastAPI()
+
+
+#====================================================
+# Request model for Evaluation
+#====================================================
+
+class EvaluationQuestion(BaseModel):
+    document_id: int
+    question: str
+    expected_chunk_index: int
 
 #====================================================
 # Request model for Chat
@@ -357,27 +368,17 @@ def chat_with_document(request: ChatRequest):
             "sources": []
         }
 
+    expanded_results = vector_store.expand_context(
+        document_id=request.document_id,
+        search_results=results,
+        neighbor_count=1
+    )
+
     context = "\n\n".join(
-        result["context"] for result in results
+            f"[Chunk {result['metadata']['chunkIndex']}]\n"
+            f"{result['content']}"
+        for result in expanded_results
         )
-
-    prompt = f"""
-            You are an AI study assistant.
-
-            Answer the user's question using ONLY the information
-            provided in the document context below.
-
-            If the answer cannot be found in the context,
-            say that the information is not available in the document.
-
-            Document context:
-            {context}
-
-            User question:
-            {request.question}
-
-            Answer:
-        """ 
 
     answer = llm_service.generate_answer(
         question=request.question,
@@ -386,4 +387,32 @@ def chat_with_document(request: ChatRequest):
     return {
         "answer": answer,
         "sources": results
+    }
+
+@app.post("/evaluate-retrieval")
+def evaluate_retrieval(request: EvaluationQuestion):
+    results = vector_store.search(
+        document_id=request.document_id,
+        query=request.question,
+        top_k=5
+    )
+
+    if not results:
+        return {
+            "message": "No relevant information found in the document.",
+            "expected_chunk_index": request.expected_chunk_index,
+            "retrieved_chunk_indices": []
+        }
+
+    retrieved_chunk_indices = [
+        result['metadata']['chunkIndex'] for result in results
+    ]
+
+    is_expected_chunk_retrieved = request.expected_chunk_index in retrieved_chunk_indices
+
+    return {
+        "message": "Evaluation completed.",
+        "expected_chunk_index": request.expected_chunk_index,
+        "retrieved_chunk_indices": retrieved_chunk_indices,
+        "is_expected_chunk_retrieved": is_expected_chunk_retrieved
     }

@@ -81,5 +81,49 @@ class VectorStore:
 
         return search_results
 
+    def expand_context(
+            self,
+            document_id:int,
+            search_results:list[dict],
+            neighbor_count:int=1
+    ):
+        if not search_results:
+            return []
+        chunk_indexes = set()
+
+        for result in search_results:
+            chunk_index = result["metadata"]["chunkIndex"]
+
+            for offset in range(-neighbor_count, neighbor_count + 1):
+                neighbor_index = chunk_index + offset
+                if neighbor_index >= 0:
+                    chunk_indexes.add(neighbor_index)
+
+        ids = [
+            f"{document_id}-{index}" 
+            for index in chunk_indexes
+        ]
+
+        results = self.collection.get(
+            ids=ids 
+        )
+        documents = results.get('documents', [])
+        metadatas = results.get('metadatas', [])
+
+        expanded_results = []
+
+        for document, metadata in zip(documents, metadatas):
+            expanded_results.append({
+                "context": document,
+                "metadata": {
+                    "documentId": metadata["document_id"],
+                    "chunkIndex": metadata["chunk_index"]
+                }
+            })  
+
+        expanded_results.sort(
+            key=lambda result: result["metadata"]["chunkIndex"]
+            )
+        return expanded_results
 
 vector_store = VectorStore()
