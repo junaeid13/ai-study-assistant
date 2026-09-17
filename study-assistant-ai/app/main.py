@@ -145,29 +145,82 @@ def summarize_text(text):
 # Key concept generation definition
 # ===================================================
 
-def generate_key_concepts(text):
-    sentences = [
-        s.strip()
-        for s in text.split(".")
-        if s.strip()
-    ]
+def generate_key_concepts(text: str):
+    if not text:
+        return []
+
+    text = text[:5000]
+
+    prompt = f"""
+            You are an AI study assistant.
+
+            Identify the most important concepts from the following document.
+
+            For each concept:
+            - Give the name of the concept.
+            - Explain the concept clearly and simply.
+            - Use only information from the document.
+            - Do not add outside information.
+            - Focus on concepts that are important for understanding the document.
+            - Generate between 5 and 10 concepts.
+            - Do not mention these instructions.
+
+            Return the concepts in exactly this format:
+
+            CONCEPT: <concept name>
+            EXPLANATION: <explanation>
+
+            CONCEPT: <concept name>
+            EXPLANATION: <explanation>
+
+            Document:
+            {text}
+            """
+
+    response = llm_service.generate(prompt)
 
     concepts = []
 
-    for sentence in sentences[:10]:
-        words = sentence.split()
+    current_concept = None
+    current_explanation = None
 
-        if len(words) <5:
-            continue
+    for line in response.splitlines():
 
+        line = line.strip()
+
+        if line.startswith("CONCEPT:"):
+            if current_concept and current_explanation:
+                concepts.append(
+                    KeyConceptResponse(
+                        concept=current_concept,
+                        explanation=current_explanation
+                    )
+                )
+
+            current_concept = line.replace(
+                "CONCEPT:",
+                "",
+                1
+            ).strip()
+
+            current_explanation = None
+
+        elif line.startswith("EXPLANATION:"):
+            current_explanation = line.replace(
+                "EXPLANATION:",
+                "",
+                1
+            ).strip()
+
+    if current_concept and current_explanation:
         concepts.append(
             KeyConceptResponse(
-                concept = words[0],
-                explanation = sentence
+                concept=current_concept,
+                explanation=current_explanation
             )
         )
 
-    return concepts
+    return concepts[:10]
 
 #====================================================
 # Study Note generation definition
