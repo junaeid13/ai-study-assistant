@@ -1,10 +1,23 @@
 from fastapi import FastAPI, UploadFile, File
 import PyPDF2
 
-from pydantic import BaseModel
 from vector_store import VectorStore
 from llm_service import llm_service
-from content_service import (content_service, KeyConceptResponse, StudyNoteResponse, QuizResponse, FlashcardResponse)
+from content_service import content_service
+from schemas import (
+    EvaluationQuestion,
+    ChatRequest,
+    ChunkRequest,
+    SearchRequest,
+    KeyConceptRequest,
+    KeyConceptResponse,
+    StudyNoteRequest,
+    StudyNoteResponse,
+    QuizRequest,
+    QuizResponse,
+    FlashcardRequest,
+    FlashcardResponse
+)
 
 
 
@@ -14,46 +27,6 @@ app = FastAPI()
 vectore_store = VectorStore()
 
 
-
-
-#====================================================
-# Request model for Evaluation
-#====================================================
-
-class EvaluationQuestion(BaseModel):
-    document_id: int
-    question: str
-    expected_chunk_index: int
-
-#====================================================
-# Request model for Chat
-#====================================================
-
-class ChatRequest(BaseModel):
-    document_id: int 
-    question: str
-    top_k: int = 5
-
-
-#====================================================
-# Request and Search model for Vector Store
-#====================================================
-class ChunkRequest(BaseModel):
-    document_id: int
-    chunks: list[str]
-
-
-class SearchRequest(BaseModel):
-    document_id: int
-    query: str
-    top_k: int = 5
-
-# =====================================================
-#  Key Concept: Request and Response model
-# =====================================================
-
-class KeyConceptRequest(BaseModel):
-    text:str
 
 # =====================================================
 # Utility: Extract text from PDF
@@ -68,27 +41,6 @@ def extract_text(file):
             text += extracted
 
     return text
-
-#====================================================
-# Study Note request and Response model
-#====================================================
-
-class StudyNoteRequest(BaseModel):
-    text: str
-
-#====================================================
-# Quiz request and Response model
-#====================================================
-
-class QuizRequest(BaseModel):
-    text: str
-
-
-#====================================================
-# Flashcard request and Response model
-#====================================================
-class FlashcardRequest(BaseModel):
-    text: str
 
 
 # =====================================================

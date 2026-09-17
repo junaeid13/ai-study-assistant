@@ -1,30 +1,7 @@
-from pydantic import BaseModel
+from schemas import ( FlashcardResponse,  KeyConceptResponse,  StudyNoteResponse, QuizResponse )
 
 from llm_service import llm_service
 
-
-class KeyConceptResponse(BaseModel):
-    concept: str
-    explanation: str
-
-
-class StudyNoteResponse(BaseModel):
-    title: str
-    content: str
-
-
-class QuizResponse(BaseModel):
-    question: str
-    optionA: str
-    optionB: str
-    optionC: str
-    optionD: str
-    correctAnswer: str
-
-
-class FlashcardResponse(BaseModel):
-    question: str
-    answer: str
 
 
 class ContentService:
