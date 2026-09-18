@@ -36,11 +36,7 @@ class RagService:
         )
 
         # 3. Build context for the LLM
-        context = "\n\n".join(
-            f"[Chunk {result['metadata']['chunkIndex']}]\n"
-            f"{result['content']}"
-            for result in expanded_results
-        )
+        context = self.__build_context(expanded_results)
 
         # 4. Generate answer
         answer = self.llm_service.generate_answer(
@@ -52,6 +48,19 @@ class RagService:
             "answer": answer,
             "sources": results
         }
+
+    def __build_context(self,results):
+
+        context_parts = []
+
+        for result in results:
+            chunk_index = result['metadata']['chunkIndex']
+            content = result['content']
+            context_parts.append(
+                f"[Chunk {chunk_index}]\n{content}"
+                )
+        
+        return "\n\n".join(context_parts)
 
 
 rag_service = RagService(
