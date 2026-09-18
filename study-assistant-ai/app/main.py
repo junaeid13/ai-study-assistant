@@ -1,8 +1,6 @@
 from fastapi import FastAPI, UploadFile, File
 import PyPDF2
-
-from vector_store import VectorStore
-from llm_service import llm_service
+from retrival_service import retrieval_service
 from reg_service import rag_service
 from content_service import content_service
 from schemas import (
@@ -21,12 +19,7 @@ from schemas import (
 )
 
 
-
-
 app = FastAPI()
-
-vector_store = VectorStore()
-
 
 
 # =====================================================
@@ -131,30 +124,6 @@ def generate_key_concepts_endpoint(request: KeyConceptRequest):
     key_concepts = content_service.generate_key_concepts(request.text)
     return key_concepts 
 
-#=====================================================
-# Vector Store endpoints
-#=====================================================
-
-@app.post("/create-embeddings")
-def create_embeddings(request: ChunkRequest):
-    vector_store.add_chunks(
-        document_id=request.document_id,
-        chunks=request.chunks
-    )
-    return {
-        "message": "Embeddings created successfully.",
-        "document_id": request.document_id,
-        "chunks_count": len(request.chunks)
-        }  
-
-@app.post("/semantic-search")
-def semantic_search(request: SearchRequest):
-    results = vector_store.search(
-        document_id=request.document_id,
-        query=request.query,
-        top_k=request.top_k
-    )
-    return results
 
 #====================================================
 # Chat with Document endpoint
@@ -169,30 +138,33 @@ def chat_with_document(request: ChatRequest):
     )
     return response
 
-@app.post("/evaluate-retrieval")
-def evaluate_retrieval(request: EvaluationQuestion):
-    results = vector_store.search(
+#=====================================================
+# Retrieval Service endpoints
+#=====================================================
+
+@app.post("/create-embeddings")
+def create_embeddings(request: ChunkRequest):
+    return retrieval_service.create_embeddings(
         document_id=request.document_id,
-        query=request.question,
+        chunks=request.chunks
+    )
+
+@app.post("/semantic-search")
+def semantic_search(request: SearchRequest):
+
+    return retrieval_service.search(
+        document_id=request.document_id,
+        query=request.query,
         top_k=request.top_k
     )
 
-    if not results:
-        return {
-            "message": "No relevant information found in the document.",
-            "expected_chunk_index": request.expected_chunk_index,
-            "retrieved_chunk_indices": []
-        }
 
-    retrieved_chunk_indices = [
-        result['metadata']['chunkIndex'] for result in results
-    ]
+@app.post("/evaluate-retrieval")
+def evaluate_retrieval(request: EvaluationQuestion):
 
-    is_expected_chunk_retrieved = request.expected_chunk_index in retrieved_chunk_indices
-
-    return {
-        "message": "Evaluation completed.",
-        "expected_chunk_index": request.expected_chunk_index,
-        "retrieved_chunk_indices": retrieved_chunk_indices,
-        "is_expected_chunk_retrieved": is_expected_chunk_retrieved
-    }
+    return retrieval_service.evaluate(
+        document_id=request.document_id,
+        question=request.question,
+        expected_chunk_index=request.expected_chunk_index,
+        top_k=request.top_k
+    )
