@@ -1,8 +1,5 @@
 import axios from "axios";
 
-
-
-
 const api = axios.create({
 baseURL: "http://localhost:8080/api"
 });
@@ -10,7 +7,7 @@ baseURL: "http://localhost:8080/api"
 export const chatWithDocument = async(
   documentId,
   question,
-  top_k = 5
+  topK = 5
 )=> {
   const response = await api.post(
     `/documents/${documentId}/chat`,
@@ -35,11 +32,13 @@ export const getKeyConcepts = async (documentId) => {
 };
 
 export const generateStudyNotes = (documentId) =>{
-  return api.post(`/study-notes/${documentId}`);
-}
+  const response = api.post(`/study-notes/${documentId}`);
+  return response.data;
+};
 
 export const getStudyNotes = async (documentId) => {
-  return api.get(`/study-notes/${documentId}`);
+  const response = await api.get(`/study-notes/${documentId}`);
+  return response.data;
 };
 
 export const getDocumentById = async (id) => {
