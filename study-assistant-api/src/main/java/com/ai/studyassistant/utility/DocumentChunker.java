@@ -15,25 +15,35 @@ public class DocumentChunker {
         if (text == null || text.isBlank()) {
             return List.of();
         }
-
+        List<String> paragraphs = splitIntoParagraphs(text);
         List<String> chunks = new ArrayList<>();
-        int start = 0;
-        while (start < text.length()) {
-            int end = Math.min(
-                    start + CHUNK_SIZE,
-                    text.length()
-            );
-            String chunk = text
-                    .substring(start, end)
-                    .trim();
+        StringBuilder currentChunk = new StringBuilder();
 
-            if (!chunk.isBlank()) {
-                chunks.add(chunk);
+        for (String paragraph : paragraphs) {
+            if (currentChunk.length() + paragraph.length() <= CHUNK_SIZE) {
+                if (!currentChunk.isEmpty()) {
+                    currentChunk.append("\n\n");
+                }
+                currentChunk.append(paragraph);
+            } else {
+                if (!currentChunk.isEmpty()) {
+                    chunks.add(currentChunk.toString().trim());
+                }
+
+                String overlap = getOverlap(currentChunk.toString());
+                currentChunk = new StringBuilder();
+                if (!overlap.isBlank()) {
+                    currentChunk.append(overlap);
+                    currentChunk.append("\n\n");
+                }
+
+                currentChunk.append(paragraph);
+
             }
-            if (end == text.length()) {
-                break;
-            }
-            start = end - CHUNK_OVERLAP;
+        }
+
+        if (!currentChunk.isEmpty()) {
+            chunks.add(currentChunk.toString().trim());
         }
         return chunks;
     }
