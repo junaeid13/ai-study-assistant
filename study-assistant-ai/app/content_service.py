@@ -92,13 +92,16 @@ class ContentService:
                         - Generate between 5 and 10 concepts.
                         - Do not mention these instructions.
 
-                        Return the concepts in exactly this format:
+                        Return ONLY valid JSON.
 
-                        CONCEPT: <concept name>
-                        EXPLANATION: <explanation>
+                        The JSON must be an array of objects using exactly this structure:
 
-                        CONCEPT: <concept name>
-                        EXPLANATION: <explanation>
+                        [
+                            {{
+                                "concept": "concept name",
+                                "explanation": "clear explanation of the concept"
+                            }}
+                        ]
 
                         Document:
                         {text}
@@ -106,50 +109,18 @@ class ContentService:
 
         response = self.llm_service.generate(prompt)
 
-        concepts = []
+        try:
+            data = json.loads(response)
 
-        current_concept = None
-        current_explanation = None
+            return [
+                KeyConceptResponse(**concept)
+                for concept in data
+            ]
 
-        for line in response.splitlines():
-
-            line = line.strip()
-
-            if line.startswith("CONCEPT:"):
-
-                if current_concept and current_explanation:
-                    concepts.append(
-                        KeyConceptResponse(
-                            concept=current_concept,
-                            explanation=current_explanation
-                        )
-                    )
-
-                current_concept = line.replace(
-                    "CONCEPT:",
-                    "",
-                    1
-                ).strip()
-
-                current_explanation = None
-
-            elif line.startswith("EXPLANATION:"):
-
-                current_explanation = line.replace(
-                    "EXPLANATION:",
-                    "",
-                    1
-                ).strip()
-
-        if current_concept and current_explanation:
-            concepts.append(
-                KeyConceptResponse(
-                    concept=current_concept,
-                    explanation=current_explanation
-                )
-            )
-
-        return concepts[:10]
+        except (json.JSONDecodeError, TypeError, ValueError) as error:
+            raise RuntimeError(
+                "Failed to parse key concept response from LLM"
+            ) from error
 
     def generate_flashcards(self, text: str):
 
@@ -224,21 +195,22 @@ class ContentService:
                         - Do not duplicate questions.
                         - Do not mention these instructions.
 
-                        Return the quiz in EXACTLY this format:
+                        Return ONLY valid JSON.
 
-                        QUESTION: <question>
-                        OPTION_A: <option A>
-                        OPTION_B: <option B>
-                        OPTION_C: <option C>
-                        OPTION_D: <option D>
-                        CORRECT_ANSWER: <exact text of the correct option>
+                        The JSON must be an array of objects using exactly this structure:
 
-                        QUESTION: <question>
-                        OPTION_A: <option A>
-                        OPTION_B: <option B>
-                        OPTION_C: <option C>
-                        OPTION_D: <option D>
-                        CORRECT_ANSWER: <exact text of the correct option>
+                        [
+                            {{
+                                "question": "question text",
+                                "options": [
+                                    "option 1",
+                                    "option 2",
+                                    "option 3",
+                                    "option 4"
+                                ],
+                                "correctAnswer": "the exact correct option"
+                            }}
+                        ]
 
                         Document:
                         {text}
@@ -246,112 +218,27 @@ class ContentService:
 
         response = self.llm_service.generate(prompt)
 
-        quiz_questions = []
+        #print("Quiz response from LLM:", response)  # Debugging line
 
-        current_question = None
-        option_a = None
-        option_b = None
-        option_c = None
-        option_d = None
-        correct_answer = None
+        try:
+            data = json.loads(response)
 
-        for line in response.splitlines():
-
-            line = line.strip()
-
-            if line.startswith("QUESTION:"):
-
-                if (
-                    current_question
-                    and option_a
-                    and option_b
-                    and option_c
-                    and option_d
-                    and correct_answer
-                ):
-                    quiz_questions.append(
-                        QuizResponse(
-                            question=current_question,
-                            optionA=option_a,
-                            optionB=option_b,
-                            optionC=option_c,
-                            optionD=option_d,
-                            correctAnswer=correct_answer
-                        )
-                    )
-
-                current_question = line.replace(
-                    "QUESTION:",
-                    "",
-                    1
-                ).strip()
-
-                option_a = None
-                option_b = None
-                option_c = None
-                option_d = None
-                correct_answer = None
-
-            elif line.startswith("OPTION_A:"):
-
-                option_a = line.replace(
-                    "OPTION_A:",
-                    "",
-                    1
-                ).strip()
-
-            elif line.startswith("OPTION_B:"):
-
-                option_b = line.replace(
-                    "OPTION_B:",
-                    "",
-                    1
-                ).strip()
-
-            elif line.startswith("OPTION_C:"):
-
-                option_c = line.replace(
-                    "OPTION_C:",
-                    "",
-                    1
-                ).strip()
-
-            elif line.startswith("OPTION_D:"):
-
-                option_d = line.replace(
-                    "OPTION_D:",
-                    "",
-                    1
-                ).strip()
-
-            elif line.startswith("CORRECT_ANSWER:"):
-
-                correct_answer = line.replace(
-                    "CORRECT_ANSWER:",
-                    "",
-                    1
-                ).strip()
-
-        if (
-            current_question
-            and option_a
-            and option_b
-            and option_c
-            and option_d
-            and correct_answer
-        ):
-            quiz_questions.append(
+            return [
                 QuizResponse(
-                    question=current_question,
-                    optionA=option_a,
-                    optionB=option_b,
-                    optionC=option_c,
-                    optionD=option_d,
-                    correctAnswer=correct_answer
+                    question=quiz["question"],
+                    optionA=quiz["options"][0],
+                    optionB=quiz["options"][1],
+                    optionC=quiz["options"][2],
+                    optionD=quiz["options"][3],
+                    correctAnswer=quiz["correctAnswer"]
                 )
-            )
+                for quiz in data
+]
 
-        return quiz_questions[:10]
+        except (json.JSONDecodeError, TypeError, ValueError) as error:
+            raise RuntimeError(
+                "Failed to parse quiz response from LLM"
+            ) from error
 
 
 content_service = ContentService(llm_service)
