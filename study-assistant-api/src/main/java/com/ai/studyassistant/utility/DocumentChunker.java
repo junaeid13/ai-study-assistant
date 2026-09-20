@@ -37,4 +37,18 @@ public class DocumentChunker {
         }
         return chunks;
     }
+
+    private List<String> splitIntoParagraphs(String text) {
+        String[] parts = text.split("\\n\\s*\\n");
+        List<String> paragraphs = new ArrayList<>();
+
+        for (String part : parts) {
+            String paragraph = part.trim();
+            if (!paragraph.isBlank()) {
+                paragraphs.add(paragraph);
+            }
+        }
+
+        return paragraphs;
+    }
 }

@@ -3,6 +3,7 @@ package com.ai.studyassistant.service;
 import com.ai.studyassistant.dto.chat.ChatRequest;
 import com.ai.studyassistant.dto.chat.ChatResponse;
 import com.ai.studyassistant.dto.chat.PythonChatRequest;
+import com.ai.studyassistant.entity.Document;
 import com.ai.studyassistant.repository.DocumentRepository;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +12,10 @@ public class ChatService {
     private final PythonApiClient pythonApiClient;
     private final DocumentRepository documentRepository;
 
-    public ChatService(PythonApiClient pythonApiClient, DocumentRepository documentRepository) {
+    public ChatService(
+            PythonApiClient pythonApiClient,
+            DocumentRepository documentRepository
+    ) {
         this.pythonApiClient = pythonApiClient;
         this.documentRepository = documentRepository;
     }
@@ -22,35 +26,31 @@ public class ChatService {
             String username
     ) {
 
-        documentRepository.findByIdAndUserUsername(
+        Document document = documentRepository.findByIdAndUserUsername(
                 documentId,
                 username
         ).orElseThrow(
-                ()-> new RuntimeException(
+                () -> new RuntimeException(
                         "Document not found."
                 )
         );
 
-
-        if (documentId == null) {
-            throw new IllegalArgumentException("documentId is null");
-        }
         if (
-                chatRequest == null ||
-                        chatRequest.question() == null ||
-                        chatRequest.question().isBlank()
+                chatRequest.question() == null || chatRequest.question().isBlank()
         ) {
-            throw new IllegalArgumentException("question is null or empty");
+            throw new RuntimeException("Question is empty.");
         }
+
 
         int topk = chatRequest.topK() == null ? 5 : chatRequest.topK();
-        if (topk <= 0) {
+
+        if (topk < 1 || topk > 20) {
             throw new IllegalArgumentException("topk is negative");
         }
 
         PythonChatRequest pythonChatRequest = new PythonChatRequest(
-                documentId,
-                chatRequest.question(),
+                document.getId(),
+                chatRequest.question().trim(),
                 topk
         );
 
