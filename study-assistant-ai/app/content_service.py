@@ -92,13 +92,16 @@ class ContentService:
                         - Generate between 5 and 10 concepts.
                         - Do not mention these instructions.
 
-                        Return the concepts in exactly this format:
+                        Return ONLY valid JSON.
 
-                        CONCEPT: <concept name>
-                        EXPLANATION: <explanation>
+                        The JSON must be an array of objects using exactly this structure:
 
-                        CONCEPT: <concept name>
-                        EXPLANATION: <explanation>
+                        [
+                            {{
+                                "concept": "concept name",
+                                "explanation": "clear explanation of the concept"
+                            }}
+                        ]
 
                         Document:
                         {text}
@@ -106,50 +109,18 @@ class ContentService:
 
         response = self.llm_service.generate(prompt)
 
-        concepts = []
+        try:
+            data = json.loads(response)
 
-        current_concept = None
-        current_explanation = None
+            return [
+                KeyConceptResponse(**concept)
+                for concept in data
+            ]
 
-        for line in response.splitlines():
-
-            line = line.strip()
-
-            if line.startswith("CONCEPT:"):
-
-                if current_concept and current_explanation:
-                    concepts.append(
-                        KeyConceptResponse(
-                            concept=current_concept,
-                            explanation=current_explanation
-                        )
-                    )
-
-                current_concept = line.replace(
-                    "CONCEPT:",
-                    "",
-                    1
-                ).strip()
-
-                current_explanation = None
-
-            elif line.startswith("EXPLANATION:"):
-
-                current_explanation = line.replace(
-                    "EXPLANATION:",
-                    "",
-                    1
-                ).strip()
-
-        if current_concept and current_explanation:
-            concepts.append(
-                KeyConceptResponse(
-                    concept=current_concept,
-                    explanation=current_explanation
-                )
-            )
-
-        return concepts[:10]
+        except (json.JSONDecodeError, TypeError, ValueError) as error:
+            raise RuntimeError(
+                "Failed to parse key concept response from LLM"
+            ) from error
 
     def generate_flashcards(self, text: str):
 
