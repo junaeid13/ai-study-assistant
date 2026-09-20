@@ -1,7 +1,7 @@
 from schemas import ( FlashcardResponse,  KeyConceptResponse,  StudyNoteResponse, QuizResponse )
 
 from llm_service import llm_service
-
+import json
 
 
 class ContentService:
@@ -172,13 +172,14 @@ class ContentService:
                         - Do not make duplicate flashcards.
                         - Do not mention these instructions.
 
-                        Return the flashcards in exactly this format:
+                        The JSON must be an array of objects using exactly this structure:
 
-                        QUESTION: <question>
-                        ANSWER: <answer>
-
-                        QUESTION: <question>
-                        ANSWER: <answer>
+                        [
+                            {{
+                                "question": "question text",
+                                "answer": "answer text"
+                            }}
+                        ]
 
                         Document:
                         {text}
@@ -186,50 +187,18 @@ class ContentService:
 
         response = self.llm_service.generate(prompt)
 
-        flashcards = []
+        try:
+            data = json.loads(response)
 
-        current_question = None
-        current_answer = None
+            return [
+                    FlashcardResponse(**flashcard)
+                    for flashcard in data
+                    ]
 
-        for line in response.splitlines():
-
-            line = line.strip()
-
-            if line.startswith("QUESTION:"):
-
-                if current_question and current_answer:
-                    flashcards.append(
-                        FlashcardResponse(
-                            question=current_question,
-                            answer=current_answer
-                        )
-                    )
-
-                current_question = line.replace(
-                    "QUESTION:",
-                    "",
-                    1
-                ).strip()
-
-                current_answer = None
-
-            elif line.startswith("ANSWER:"):
-
-                current_answer = line.replace(
-                    "ANSWER:",
-                    "",
-                    1
-                ).strip()
-
-        if current_question and current_answer:
-            flashcards.append(
-                FlashcardResponse(
-                    question=current_question,
-                    answer=current_answer
-                )
-            )
-
-        return flashcards[:10]
+        except (json.JSONDecodeError, TypeError, ValueError) as error:
+                raise RuntimeError(
+                    "Failed to parse flashcard response from LLM"
+                ) from error
 
     def generate_quiz(self, text: str):
 
