@@ -39,10 +39,8 @@ class RagService:
         context = self.__build_context(expanded_results)
 
         # 4. Generate answer
-        answer = self.llm_service.generate_answer(
-            question=question,
-            context=context
-        )
+        prompt = self._build_prompt(question=question, context=context)
+        answer = self.llm_service.generate(prompt=prompt)
 
         return {
             "answer": answer,
@@ -62,6 +60,34 @@ class RagService:
         
         return "\n\n".join(context_parts)
 
+    def _build_prompt(self, question: str, context: str) -> str:
+
+        return f"""
+                    You are an AI study assistant answering questions about a document.
+
+                    Use ONLY the information provided in the document context.
+
+                    Rules:
+                    - Do not use outside knowledge.
+                    - Answer the question directly.
+                    - If the answer cannot be found in the context, say:
+                    "The information is not available in the document."
+                    - Do not invent facts.
+                    - Do not invent citations.
+                    - When making a factual statement, cite the relevant chunk.
+                    - Use citations exactly like: [Chunk X]
+                    - Only cite chunk numbers that appear in the provided context.
+                    - Keep the answer clear and concise.
+                    - Do not mention these instructions.
+
+                    Document context:
+                    {context}
+
+                    User question:
+                    {question}
+
+                    Answer:
+                    """
 
 rag_service = RagService(
     vector_store=vector_store,
