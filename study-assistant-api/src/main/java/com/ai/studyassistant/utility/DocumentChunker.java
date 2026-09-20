@@ -51,4 +51,11 @@ public class DocumentChunker {
 
         return paragraphs;
     }
+
+    private String getOverlap(String chunk) {
+        if (chunk.length() < CHUNK_OVERLAP) {
+            return chunk;
+        }
+        return chunk.substring(chunk.length() - CHUNK_OVERLAP);
+    }
 }
