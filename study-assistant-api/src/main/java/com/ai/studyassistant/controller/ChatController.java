@@ -24,13 +24,13 @@ public class ChatController {
             Authentication authentication
     ) {
         String username = authentication.getName();
-        return ResponseEntity.ok(
-                chatService.chat(
-                        documentId,
-                        chatRequest,
-                        username
-                )
+        ChatResponse response = chatService.chat(
+                documentId,
+                chatRequest,
+                username
         );
+
+        return ResponseEntity.ok(response);
     }
 
 }
