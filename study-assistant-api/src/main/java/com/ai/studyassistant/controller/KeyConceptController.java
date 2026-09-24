@@ -3,6 +3,7 @@ package com.ai.studyassistant.controller;
 import com.ai.studyassistant.dto.study.KeyConceptResponse;
 import com.ai.studyassistant.service.KeyConceptService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,19 +21,23 @@ public class KeyConceptController {
 
     @PostMapping("/{documentId}")
     public ResponseEntity<List<KeyConceptResponse>> generateKeyConcepts(
-            @PathVariable("documentId") Long documentID
+            @PathVariable("documentId") Long documentID,
+            Authentication authentication
     ) {
+        String username = authentication.getName();
         return ResponseEntity.ok(
-                keyConceptService.generateKeyConcepts(documentID)
+                keyConceptService.generateKeyConcepts(documentID, username)
         );
     }
 
     @GetMapping("/{documentId}")
     public ResponseEntity<List<KeyConceptResponse>> getKeyConcepts(
-            @PathVariable("documentId") Long documentID
+            @PathVariable("documentId") Long documentID,
+            Authentication authentication
     ) {
+        String username = authentication.getName();
         return ResponseEntity.ok(
-                keyConceptService.getKeyConcepts(documentID)
+                keyConceptService.getKeyConcepts(documentID, username)
         );
     }
 

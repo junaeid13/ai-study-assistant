@@ -9,6 +9,7 @@ import com.ai.studyassistant.repository.DocumentRepository;
 import com.ai.studyassistant.repository.KeyConceptRepository;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
@@ -31,8 +32,8 @@ public class KeyConceptService {
         this.pythonApiClient = pythonApiClient;
     }
 
-    public List<KeyConceptResponse> generateKeyConcepts(Long documentId) {
-        Document document = documentRepository.findById(documentId)
+    public List<KeyConceptResponse> generateKeyConcepts(Long documentId, String username) {
+        Document document = documentRepository.findByIdAndUserUsername(documentId, username)
                 .orElseThrow(() -> new RuntimeException("Document not found"));
 
         if (document.getKeyConcepts() != null && !document.getKeyConcepts().isEmpty()) {
@@ -71,8 +72,8 @@ public class KeyConceptService {
                 .toList();
     }
 
-    public List<KeyConceptResponse> getKeyConcepts(Long documentId) {
-        Document document = documentRepository.findById(documentId)
+    public List<KeyConceptResponse> getKeyConcepts(Long documentId, String username) {
+        Document document = documentRepository.findByIdAndUserUsername(documentId, username)
                 .orElseThrow(() -> new RuntimeException("Document not found"));
 
         return document.getKeyConcepts()
