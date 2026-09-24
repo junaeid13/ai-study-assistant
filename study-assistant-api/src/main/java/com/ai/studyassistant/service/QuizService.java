@@ -19,7 +19,6 @@ public class QuizService {
     private final PythonApiClient pythonApiClient;
 
 
-
     public QuizService(
             DocumentRepository documentRepository,
             QuizRepository quizRepository,
@@ -30,10 +29,10 @@ public class QuizService {
         this.pythonApiClient = pythonApiClient;
     }
 
-    public List<QuizResponse> generateQuiz(Long documentId) {
+    public List<QuizResponse> generateQuiz(Long documentId, String username) {
         // step 1 : Load Document
         Document document = documentRepository
-                .findById(documentId)
+                .findByIdAndUserUsername(documentId, username)
                 .orElseThrow(() -> new RuntimeException("Document not found"));
 
         // step 2 : If quizzes exist
@@ -47,7 +46,6 @@ public class QuizService {
 
         // step 3 : Otherwise call Python
         QuizRequest requestBody = new QuizRequest(document.getSummary());
-
 
 
         // step 4 : Save quiz
