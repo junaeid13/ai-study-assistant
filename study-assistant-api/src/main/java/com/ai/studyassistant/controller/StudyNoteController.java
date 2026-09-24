@@ -4,6 +4,7 @@ import com.ai.studyassistant.dto.study.StudyNoteResponse;
 import com.ai.studyassistant.service.StudyNoteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,10 +21,12 @@ public class StudyNoteController {
 
     @PostMapping("/{documentId}/notes")
     public ResponseEntity<List<StudyNoteResponse>> generateNotes(
-            @PathVariable Long documentId
+            @PathVariable Long documentId,
+            Authentication authentication
     ) {
+        String username = authentication.getName();
         return ResponseEntity.ok(
-                studyNoteService.generateNotes(documentId)
+                studyNoteService.generateNotes(documentId, username)
         );
     }
 }

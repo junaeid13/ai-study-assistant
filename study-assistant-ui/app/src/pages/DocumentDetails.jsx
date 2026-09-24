@@ -1,14 +1,18 @@
+
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { getDocumentById } from "../services/api";
+import {
+  getDocumentById,
+  generateOrGetFlashcards,
+  generateOrGetQuiz,
+  getStudyNotes,
+  generateKeyConcepts,
+  getKeyConcepts,
+} from "../services/api";
 import FlashcardList from "../components/FlashcardList";
-import { getFlashcards } from "../services/api";
-import { getQuiz } from "../services/api";
 import QuizList from "../components/QuizList";
 import StudyNoteList from "../components/StudyNoteList";
-import { getStudyNotes } from "../services/api";
-import keyConceptList from "../components/KeyConceptList";
-import {generateKeyConcepts, getKeyConcepts} from "../services/api";
+import KeyConceptList from "../components/KeyConceptList";
 import ChatWithPdf from "../components/ChatWithPdf";
 
 function DocumentDetails() {
@@ -83,24 +87,19 @@ function DocumentDetails() {
   const loadQuiz = async () => {
 
     try {
-
         setLoadingQuizzes(true);
-
-        const response = await getQuiz(id);
-
-        console.log("QUIZ RESPONSE:", response);
-
+        const response = await generateOrGetQuiz(id);
         setQuizzes(response);
-
       } catch (error) {
-
           console.error(error);
-
+          setError("Failed to load quizzes");
       } finally {
-
           setLoadingQuizzes(false);
       }
     };
+    useEffect(() => {
+      loadQuiz();
+    }, [id]);
 
   const loadFlashcards = async () => {
     try {
@@ -148,11 +147,6 @@ function DocumentDetails() {
   if (loading) {
     return <p>Loading document...</p>;
   }
-
-  if (error) {
-    return <p>{error}</p>;
-  }
-
   if (!document) {
     return <p>Document not found.</p>;
   }

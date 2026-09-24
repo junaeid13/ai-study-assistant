@@ -3,6 +3,7 @@ package com.ai.studyassistant.controller;
 import com.ai.studyassistant.dto.study.quiz.QuizResponse;
 import com.ai.studyassistant.service.QuizService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,10 +25,12 @@ public class QuizController {
 
     @GetMapping("/{documentId}")
     public ResponseEntity<List<QuizResponse>> getQuiz(
-            @PathVariable Long documentId
+            @PathVariable Long documentId,
+            Authentication authentication
     ) {
+        String username = authentication.getName();
         return ResponseEntity.ok(
-                quizService.generateQuiz(documentId)
+                quizService.generateQuiz(documentId, username)
         );
     }
 }
