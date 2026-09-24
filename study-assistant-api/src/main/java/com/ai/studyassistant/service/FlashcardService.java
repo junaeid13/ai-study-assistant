@@ -9,6 +9,7 @@ import com.ai.studyassistant.repository.DocumentRepository;
 import com.ai.studyassistant.repository.FlashcardRepository;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
@@ -33,10 +34,10 @@ public class FlashcardService {
     }
 
 
-    public List<FlashcardResponse> generateFlashcards(Long documentId) {
+    public List<FlashcardResponse> generateFlashcards(Long documentId, String username) {
 
 
-        Document document = documentRepository.findById(documentId)
+        Document document = documentRepository.findByIdAndUserUsername(documentId, username)
                 .orElseThrow(() -> new RuntimeException("document not found"));
 
         if (document.getFlashcards() != null &&
