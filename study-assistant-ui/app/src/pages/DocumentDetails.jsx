@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
   getDocumentById,
-  getFlashcards,
-  getQuiz,
+  generateOrGetFlashcards,
+  generateOrGetQuiz,
   getStudyNotes,
   generateKeyConcepts,
   getKeyConcepts,
@@ -88,7 +88,7 @@ function DocumentDetails() {
 
     try {
         setLoadingQuizzes(true);
-        const response = await getQuiz(id);
+        const response = await generateOrGetQuiz(id);
         setQuizzes(response);
       } catch (error) {
           console.error(error);

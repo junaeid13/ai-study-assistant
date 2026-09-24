@@ -71,24 +71,14 @@ export const getCurrentUser = async () => {
   }
 };
 
-export const getFlashcards = async (documentId) => {
-  try {
+export const generateOrGetFlashcards = async (documentId) => {
     const response = await api.get(`/flashcards/${documentId}`);
     return response.data;
-  } catch (error) {
-    console.error("Error fetching flashcards:", error);
-    throw error;
-  }
 };
 
-export const getQuiz = async (documentId) => {
-  try {
+export const generateOrGetQuiz = async (documentId) => {
     const response = await api.get(`/quizzes/${documentId}`);
     return response.data;
-  } catch (error) {
-    console.error("Error fetching quiz:", error);
-    throw error;
-  }
 };
 
 
