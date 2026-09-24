@@ -37,8 +37,8 @@ public class StudyNoteService {
     }
 
 
-    public List<StudyNoteResponse> generateNotes(Long documentId) {
-        Document document = documentRepository.findById(documentId)
+    public List<StudyNoteResponse> generateNotes(Long documentId, String username) {
+        Document document = documentRepository.findByIdAndUserUsername(documentId, username)
                 .orElseThrow(() -> new RuntimeException("Document not found"));
 
         if (document.getNotes() != null && !document.getNotes().isEmpty()) {
