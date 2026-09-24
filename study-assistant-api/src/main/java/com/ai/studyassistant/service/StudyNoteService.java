@@ -4,6 +4,7 @@ import com.ai.studyassistant.dto.study.StudyNoteRequest;
 import com.ai.studyassistant.dto.study.StudyNoteResponse;
 import com.ai.studyassistant.entity.Document;
 import com.ai.studyassistant.entity.StudyNote;
+import com.ai.studyassistant.exception.DocumentNotFoundException;
 import com.ai.studyassistant.mapper.StudyNoteMapper;
 import com.ai.studyassistant.repository.DocumentRepository;
 import com.ai.studyassistant.repository.StudyNoteRepository;
@@ -39,7 +40,7 @@ public class StudyNoteService {
 
     public List<StudyNoteResponse> generateNotes(Long documentId, String username) {
         Document document = documentRepository.findByIdAndUserUsername(documentId, username)
-                .orElseThrow(() -> new RuntimeException("Document not found"));
+                .orElseThrow(() -> new DocumentNotFoundException("Document not found"));
 
         if (document.getNotes() != null && !document.getNotes().isEmpty()) {
             return document.getNotes().stream().map(studyNoteMapper::toResponse)
