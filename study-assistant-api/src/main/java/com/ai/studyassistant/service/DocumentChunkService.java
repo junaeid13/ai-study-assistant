@@ -6,6 +6,7 @@ import com.ai.studyassistant.entity.Document;
 import com.ai.studyassistant.entity.DocumentChunk;
 import com.ai.studyassistant.exception.DocumentContentNotFoundException;
 import com.ai.studyassistant.exception.DocumentNotFoundException;
+import com.ai.studyassistant.exception.PythonApiException;
 import com.ai.studyassistant.repository.DocumentChunkRepository;
 import com.ai.studyassistant.repository.DocumentRepository;
 import com.ai.studyassistant.utility.DocumentChunker;
@@ -93,7 +94,7 @@ public class DocumentChunkService {
         );
 
         if (response == null) {
-            throw new RuntimeException(
+            throw new PythonApiException(
                     "Failed to create embeddings for documentId: " + documentId
             );
         }
