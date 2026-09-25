@@ -5,6 +5,7 @@ import com.ai.studyassistant.dto.study.KeyConceptResponse;
 import com.ai.studyassistant.entity.Document;
 import com.ai.studyassistant.entity.KeyConcept;
 import com.ai.studyassistant.exception.DocumentNotFoundException;
+import com.ai.studyassistant.exception.PythonApiException;
 import com.ai.studyassistant.mapper.KeyConceptMapper;
 import com.ai.studyassistant.repository.DocumentRepository;
 import com.ai.studyassistant.repository.KeyConceptRepository;
@@ -55,7 +56,7 @@ public class KeyConceptService {
                 );
 
         if (conceptResponses == null || conceptResponses.isEmpty()) {
-            throw new RuntimeException(
+            throw new PythonApiException(
                     "Python service returned no key concepts"
             );
         }
