@@ -3,8 +3,11 @@ package com.ai.studyassistant.service;
 import com.ai.studyassistant.dto.document.DocumentResponse;
 import com.ai.studyassistant.entity.Document;
 import com.ai.studyassistant.entity.User;
+import com.ai.studyassistant.exception.PythonApiException;
+import com.ai.studyassistant.exception.UserNotFoundException;
 import com.ai.studyassistant.repository.DocumentRepository;
 import com.ai.studyassistant.repository.UserRepository;
+import org.hibernate.service.UnknownServiceException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.json.JSONObject;
@@ -42,7 +45,7 @@ public class DocumentService {
             json = new JSONObject(responseBody);
 
         } catch (Exception e) {
-            throw new RuntimeException(
+            throw new PythonApiException(
                     "Invalid response from python API: " + responseBody, e
             );
         }
@@ -51,7 +54,7 @@ public class DocumentService {
         String extractedText = json.getString("text");
 
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
 
         Document document = new Document();

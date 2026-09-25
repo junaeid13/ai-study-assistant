@@ -4,6 +4,8 @@ import com.ai.studyassistant.dto.study.flashcard.FlashcardRequest;
 import com.ai.studyassistant.dto.study.flashcard.FlashcardResponse;
 import com.ai.studyassistant.entity.Document;
 import com.ai.studyassistant.entity.Flashcard;
+import com.ai.studyassistant.exception.DocumentNotFoundException;
+import com.ai.studyassistant.exception.PythonApiException;
 import com.ai.studyassistant.mapper.FlashcardMapper;
 import com.ai.studyassistant.repository.DocumentRepository;
 import com.ai.studyassistant.repository.FlashcardRepository;
@@ -38,7 +40,7 @@ public class FlashcardService {
 
 
         Document document = documentRepository.findByIdAndUserUsername(documentId, username)
-                .orElseThrow(() -> new RuntimeException("document not found"));
+                .orElseThrow(() -> new DocumentNotFoundException("document not found"));
 
         if (document.getFlashcards() != null &&
                 !document.getFlashcards().isEmpty()
@@ -59,7 +61,7 @@ public class FlashcardService {
         );
 
         if (flashcardResponses == null || flashcardResponses.isEmpty())
-            throw new RuntimeException(
+            throw new PythonApiException(
                     "Python service returned no flashcards"
             );
 

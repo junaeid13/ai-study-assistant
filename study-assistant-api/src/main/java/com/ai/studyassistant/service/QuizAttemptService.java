@@ -7,6 +7,8 @@ import com.ai.studyassistant.entity.Document;
 import com.ai.studyassistant.entity.Quiz;
 import com.ai.studyassistant.entity.QuizAttempt;
 import com.ai.studyassistant.entity.User;
+import com.ai.studyassistant.exception.DocumentNotFoundException;
+import com.ai.studyassistant.exception.UserNotFoundException;
 import com.ai.studyassistant.repository.DocumentRepository;
 import com.ai.studyassistant.repository.QuizAttemptRepository;
 import com.ai.studyassistant.repository.QuizRepository;
@@ -47,7 +49,7 @@ public class QuizAttemptService {
 
         // Step 1 : Load document
         Document document = documentRepository.findById(request.documentId())
-                .orElseThrow(() -> new RuntimeException("Document not found"));
+                .orElseThrow(() -> new DocumentNotFoundException("Document not found"));
 
         // Step 2 : Load quizzes
         List<Quiz> quizzes =
@@ -95,7 +97,7 @@ public class QuizAttemptService {
 
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() ->
-                        new RuntimeException("Authenticated user not found"));
+                        new UserNotFoundException("Authenticated user not found"));
 
         // Step 6 : Save attempt
 

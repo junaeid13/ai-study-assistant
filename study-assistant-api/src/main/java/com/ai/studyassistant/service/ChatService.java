@@ -4,6 +4,8 @@ import com.ai.studyassistant.dto.chat.ChatRequest;
 import com.ai.studyassistant.dto.chat.ChatResponse;
 import com.ai.studyassistant.dto.chat.PythonChatRequest;
 import com.ai.studyassistant.entity.Document;
+import com.ai.studyassistant.exception.DocumentNotFoundException;
+import com.ai.studyassistant.exception.InvalidRequestException;
 import com.ai.studyassistant.repository.DocumentRepository;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +32,7 @@ public class ChatService {
                 documentId,
                 username
         ).orElseThrow(
-                () -> new RuntimeException(
+                () -> new DocumentNotFoundException(
                         "Document not found."
                 )
         );
@@ -38,20 +40,20 @@ public class ChatService {
         if (
                 chatRequest.question() == null || chatRequest.question().isBlank()
         ) {
-            throw new RuntimeException("Question is empty.");
+            throw new InvalidRequestException("Question is empty.");
         }
 
 
-        int topk = chatRequest.topK() == null ? 5 : chatRequest.topK();
+        int topK = chatRequest.topK() == null ? 5 : chatRequest.topK();
 
-        if (topk < 1 || topk > 20) {
-            throw new IllegalArgumentException("topk is negative");
+        if (topK < 1 || topK > 20) {
+            throw new InvalidRequestException("topK must be vetween 1 and 20");
         }
 
         PythonChatRequest pythonChatRequest = new PythonChatRequest(
                 document.getId(),
                 chatRequest.question().trim(),
-                topk
+                topK
         );
 
         return pythonApiClient.postForObject(
