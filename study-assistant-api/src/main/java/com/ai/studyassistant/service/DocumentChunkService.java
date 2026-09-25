@@ -4,6 +4,7 @@ import com.ai.studyassistant.dto.embedding.EmbeddingRequest;
 import com.ai.studyassistant.dto.embedding.EmbeddingResponse;
 import com.ai.studyassistant.entity.Document;
 import com.ai.studyassistant.entity.DocumentChunk;
+import com.ai.studyassistant.exception.DocumentContentNotFoundException;
 import com.ai.studyassistant.exception.DocumentNotFoundException;
 import com.ai.studyassistant.repository.DocumentChunkRepository;
 import com.ai.studyassistant.repository.DocumentRepository;
@@ -37,7 +38,7 @@ public class DocumentChunkService {
                 .orElseThrow(() -> new DocumentNotFoundException("Document Not Found"));
 
         if (document.getExtractedText() == null || document.getExtractedText().isBlank()) {
-            throw new RuntimeException("Extracted Text Not Found");
+            throw new DocumentContentNotFoundException("Extracted Text Not Found");
         }
 
         // Avoid creating duplicate chunks
@@ -52,7 +53,7 @@ public class DocumentChunkService {
         List<String> chunks =
                 documentChunker.chunk(document.getExtractedText());
         if (chunks.isEmpty()) {
-            throw new RuntimeException("Extracted Text Not Found");
+            throw new DocumentContentNotFoundException("Extracted Text Not Found");
         }
 
         // create DocumentChunk entities
