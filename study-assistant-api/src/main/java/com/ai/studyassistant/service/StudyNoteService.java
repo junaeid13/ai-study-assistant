@@ -5,6 +5,7 @@ import com.ai.studyassistant.dto.study.StudyNoteResponse;
 import com.ai.studyassistant.entity.Document;
 import com.ai.studyassistant.entity.StudyNote;
 import com.ai.studyassistant.exception.DocumentNotFoundException;
+import com.ai.studyassistant.exception.PythonApiException;
 import com.ai.studyassistant.mapper.StudyNoteMapper;
 import com.ai.studyassistant.repository.DocumentRepository;
 import com.ai.studyassistant.repository.StudyNoteRepository;
@@ -57,7 +58,7 @@ public class StudyNoteService {
         );
 
         if (studyNoteResponses == null || studyNoteResponses.isEmpty()) {
-            throw new RuntimeException("Python service returned no study notes");
+            throw new PythonApiException("Python service returned no study notes");
         }
 
         // save notes

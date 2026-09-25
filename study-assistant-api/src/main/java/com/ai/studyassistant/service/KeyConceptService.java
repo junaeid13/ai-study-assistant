@@ -76,7 +76,7 @@ public class KeyConceptService {
 
     public List<KeyConceptResponse> getKeyConcepts(Long documentId, String username) {
         Document document = documentRepository.findByIdAndUserUsername(documentId, username)
-                .orElseThrow(() -> new RuntimeException("Document not found"));
+                .orElseThrow(() -> new DocumentNotFoundException("Document not found"));
 
         return document.getKeyConcepts()
                 .stream()

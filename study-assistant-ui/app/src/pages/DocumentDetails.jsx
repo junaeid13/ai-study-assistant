@@ -61,11 +61,6 @@ function DocumentDetails() {
       setLoadingKeyConcepts(false);
     }
   };
-  
-  useEffect(() => {
-    loadKeyConcepts();
-  }, [id]);
-
 
   const loadStudyNotes = async () => {
     try {
@@ -80,9 +75,6 @@ function DocumentDetails() {
     }
   };
 
-  useEffect(() => {
-    loadStudyNotes();
-  }, [id]);
 
   const loadQuiz = async () => {
 
@@ -97,15 +89,12 @@ function DocumentDetails() {
           setLoadingQuizzes(false);
       }
     };
-    useEffect(() => {
-      loadQuiz();
-    }, [id]);
 
   const loadFlashcards = async () => {
     try {
       setLoadingFlashcards(true);
       
-      const response = await getFlashcards(id);
+      const response = await generateOrGetFlashcards(id);
       setFlashcards(response);
     } catch (err) {
       console.error(err);
@@ -114,10 +103,6 @@ function DocumentDetails() {
       setLoadingFlashcards(false);
     }
   };
-
-  useEffect(() => {
-    loadFlashcards();
-  }, [id]);
 
   useEffect(() => {
 

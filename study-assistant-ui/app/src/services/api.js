@@ -13,7 +13,7 @@ export const chatWithDocument = async(
     `/documents/${documentId}/chat`,
     {
       question,
-      top_k
+      topK
     }
   );
   return response.data;
@@ -37,7 +37,7 @@ export const generateStudyNotes = (documentId) =>{
 };
 
 export const getStudyNotes = async (documentId) => {
-  const response = await api.get(`/study-notes/${documentId}`);
+  const response = await api.get(`//${documentId}/notes`);
   return response.data;
 };
 
@@ -51,15 +51,6 @@ export const getDocumentById = async (id) => {
   }
 };
 
-export const submitQuiz = async (payload) => {
-  try {
-    const response = await api.post(`/quizzes/submit`, payload);
-    return response.data;
-  } catch (error) {
-    console.error("Error submitting quiz:", error);
-    throw error;
-  }
-};
 
 export const getCurrentUser = async () => {
   try {
@@ -81,6 +72,15 @@ export const generateOrGetQuiz = async (documentId) => {
     return response.data;
 };
 
+export const submitQuiz = async (payload) => {
+  try {
+    const response = await api.post(`/quizzes/submit`, payload);
+    return response.data;
+  } catch (error) {
+    console.error("Error submitting quiz:", error);
+    throw error;
+  }
+};
 
 
 /**

@@ -5,6 +5,7 @@ import com.ai.studyassistant.dto.study.quiz.QuizResponse;
 import com.ai.studyassistant.entity.Document;
 import com.ai.studyassistant.entity.Quiz;
 import com.ai.studyassistant.exception.DocumentNotFoundException;
+import com.ai.studyassistant.exception.PythonApiException;
 import com.ai.studyassistant.repository.DocumentRepository;
 import com.ai.studyassistant.repository.QuizRepository;
 import org.springframework.core.ParameterizedTypeReference;
@@ -58,7 +59,9 @@ public class QuizService {
         );
 
         if (quizResponses == null || quizResponses.isEmpty())
-            return List.of();
+            throw new PythonApiException(
+              "Python service returned no quiz response"
+            );
 
         // step 5 : save quizzes into database
         List<Quiz> quizzes = quizResponses.stream()
