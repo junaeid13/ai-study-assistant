@@ -3,6 +3,7 @@ package com.ai.studyassistant.service;
 import com.ai.studyassistant.dto.search.SemanticSearchRequest;
 import com.ai.studyassistant.dto.search.SemanticSearchResponse;
 import com.ai.studyassistant.exception.DocumentNotFoundException;
+import com.ai.studyassistant.exception.InvalidRequestException;
 import com.ai.studyassistant.repository.DocumentRepository;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ public class SemanticSearchService {
                 )
         );
         if (request.query() == null || request.query().isBlank()) {
-            throw new IllegalArgumentException(
+            throw new InvalidRequestException(
                     "Search query cannot be empty"
             );
         }
@@ -44,7 +45,7 @@ public class SemanticSearchService {
         Integer topK = request.topk() == null ? 5 : request.topk();
 
         if (topK <= 0) {
-            throw new IllegalArgumentException(
+            throw new InvalidRequestException(
                     "Top K must be greater than 0"
             );
         }
