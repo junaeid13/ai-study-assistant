@@ -1,5 +1,6 @@
 package com.ai.studyassistant.service;
 
+import com.ai.studyassistant.exception.PythonApiException;
 import org.springframework.beans.factory.annotation.ParameterResolutionDelegate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -45,7 +46,7 @@ public class PythonApiClient {
                 );
 
         if (response.getBody() == null || response.getBody().isEmpty()) {
-            throw new RuntimeException(
+            throw new PythonApiException(
                     "Python Api returned empty response"
             );
         }
@@ -67,7 +68,7 @@ public class PythonApiClient {
         );
 
         if (!response.getStatusCode().is2xxSuccessful()) {
-            throw new RuntimeException(
+            throw new PythonApiException(
                     "Python Api returned non-successful response"
             );
         }
@@ -96,7 +97,7 @@ public class PythonApiClient {
                 );
 
         if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
-            throw new RuntimeException(
+            throw new PythonApiException(
                     "Python API returned an invalid response"
             );
         }
