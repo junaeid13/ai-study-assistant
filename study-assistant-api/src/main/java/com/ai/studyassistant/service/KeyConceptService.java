@@ -4,6 +4,7 @@ import com.ai.studyassistant.dto.study.KeyConceptRequest;
 import com.ai.studyassistant.dto.study.KeyConceptResponse;
 import com.ai.studyassistant.entity.Document;
 import com.ai.studyassistant.entity.KeyConcept;
+import com.ai.studyassistant.exception.DocumentNotFoundException;
 import com.ai.studyassistant.mapper.KeyConceptMapper;
 import com.ai.studyassistant.repository.DocumentRepository;
 import com.ai.studyassistant.repository.KeyConceptRepository;
@@ -34,7 +35,7 @@ public class KeyConceptService {
 
     public List<KeyConceptResponse> generateKeyConcepts(Long documentId, String username) {
         Document document = documentRepository.findByIdAndUserUsername(documentId, username)
-                .orElseThrow(() -> new RuntimeException("Document not found"));
+                .orElseThrow(() -> new DocumentNotFoundException("Document not found"));
 
         if (document.getKeyConcepts() != null && !document.getKeyConcepts().isEmpty()) {
             return document.getKeyConcepts()

@@ -2,6 +2,7 @@ package com.ai.studyassistant.service;
 
 import com.ai.studyassistant.dto.search.SemanticSearchRequest;
 import com.ai.studyassistant.dto.search.SemanticSearchResponse;
+import com.ai.studyassistant.exception.DocumentNotFoundException;
 import com.ai.studyassistant.repository.DocumentRepository;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,7 @@ public class SemanticSearchService {
                 documentId,
                 username
         ).orElseThrow(
-                () -> new RuntimeException(
+                () -> new DocumentNotFoundException(
                         "Document not found."
                 )
         );

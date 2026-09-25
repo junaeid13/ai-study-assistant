@@ -4,6 +4,7 @@ import com.ai.studyassistant.dto.study.quiz.QuizRequest;
 import com.ai.studyassistant.dto.study.quiz.QuizResponse;
 import com.ai.studyassistant.entity.Document;
 import com.ai.studyassistant.entity.Quiz;
+import com.ai.studyassistant.exception.DocumentNotFoundException;
 import com.ai.studyassistant.repository.DocumentRepository;
 import com.ai.studyassistant.repository.QuizRepository;
 import org.springframework.core.ParameterizedTypeReference;
@@ -33,7 +34,7 @@ public class QuizService {
         // step 1 : Load Document
         Document document = documentRepository
                 .findByIdAndUserUsername(documentId, username)
-                .orElseThrow(() -> new RuntimeException("Document not found"));
+                .orElseThrow(() -> new DocumentNotFoundException("Document not found"));
 
         // step 2 : If quizzes exist
         //          return them

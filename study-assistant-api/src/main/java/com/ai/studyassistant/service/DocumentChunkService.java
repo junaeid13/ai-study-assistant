@@ -4,6 +4,7 @@ import com.ai.studyassistant.dto.embedding.EmbeddingRequest;
 import com.ai.studyassistant.dto.embedding.EmbeddingResponse;
 import com.ai.studyassistant.entity.Document;
 import com.ai.studyassistant.entity.DocumentChunk;
+import com.ai.studyassistant.exception.DocumentNotFoundException;
 import com.ai.studyassistant.repository.DocumentChunkRepository;
 import com.ai.studyassistant.repository.DocumentRepository;
 import com.ai.studyassistant.utility.DocumentChunker;
@@ -33,7 +34,7 @@ public class DocumentChunkService {
 
     public List<DocumentChunk> createChunk(Long documentId) {
         Document document = documentRepository.findById(documentId)
-                .orElseThrow(() -> new RuntimeException("Document Not Found"));
+                .orElseThrow(() -> new DocumentNotFoundException("Document Not Found"));
 
         if (document.getExtractedText() == null || document.getExtractedText().isBlank()) {
             throw new RuntimeException("Extracted Text Not Found");

@@ -4,6 +4,7 @@ import com.ai.studyassistant.dto.chat.ChatRequest;
 import com.ai.studyassistant.dto.chat.ChatResponse;
 import com.ai.studyassistant.dto.chat.PythonChatRequest;
 import com.ai.studyassistant.entity.Document;
+import com.ai.studyassistant.exception.DocumentNotFoundException;
 import com.ai.studyassistant.repository.DocumentRepository;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +31,7 @@ public class ChatService {
                 documentId,
                 username
         ).orElseThrow(
-                () -> new RuntimeException(
+                () -> new DocumentNotFoundException(
                         "Document not found."
                 )
         );
