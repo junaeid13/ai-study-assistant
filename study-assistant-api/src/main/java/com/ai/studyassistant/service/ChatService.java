@@ -44,16 +44,16 @@ public class ChatService {
         }
 
 
-        int topk = chatRequest.topK() == null ? 5 : chatRequest.topK();
+        int topK = chatRequest.topK() == null ? 5 : chatRequest.topK();
 
-        if (topk < 1 || topk > 20) {
+        if (topK < 1 || topK > 20) {
             throw new InvalidRequestException("topK must be vetween 1 and 20");
         }
 
         PythonChatRequest pythonChatRequest = new PythonChatRequest(
                 document.getId(),
                 chatRequest.question().trim(),
-                topk
+                topK
         );
 
         return pythonApiClient.postForObject(
