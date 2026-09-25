@@ -7,7 +7,6 @@ import {
   generateOrGetQuiz,
   generateStudyNotes,
   generateKeyConcepts,
-  generateKeyConcepts,
 } from "../services/api";
 import FlashcardList from "../components/FlashcardList";
 import QuizList from "../components/QuizList";
@@ -20,30 +19,34 @@ function DocumentDetails() {
   const { id } = useParams();
 
 
-
+  const [document, setDocument] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [documentError, setDocumentError] = useState("");
 
   const [keyConcepts, setKeyConcepts] = useState([]);
   const [loadingKeyConcepts, setLoadingKeyConcepts] = useState(false);
+  const [keyConceptsError, setKeyConceptsError] = useState("");
+  
   const [studyNotes, setStudyNotes] = useState([]);
   const [loadingStudyNotes, setLoadingStudyNotes] = useState(false);
-  const [document, setDocument] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [studyNotesError, setStudyNotesError] = useState("");
+  
   const [flashcards, setFlashcards] = useState([]);
   const [loadingFlashcards, setLoadingFlashcards] = useState(false);
+  const [flashcardsError, setFlashcardsError] = useState("");
 
   const [quizzes, setQuizzes] = useState([]);
   const [loadingQuizzes, setLoadingQuizzes] = useState(false);
+  const [quizzesError, setQuizzesError] = useState("");
 
-
-  const generateConcepts = async () => {
+  const loadKeyConcepts = async () => {
     try {
       setLoadingKeyConcepts(true);
       const response = await generateKeyConcepts(id);
       setKeyConcepts(response);
     } catch (err) {
       console.error(err);
-      setError("Failed to generate key concepts");
+      setKeyConceptsError("Failed to generate key concepts");
     } finally {
       setLoadingKeyConcepts(false);
     }
@@ -56,7 +59,7 @@ function DocumentDetails() {
       setStudyNotes(response);
     } catch (err) {
       console.error(err);
-      setError("Failed to load study notes");
+      setStudyNotesError("Failed to load study notes");
     } finally {
       setLoadingStudyNotes(false);
     }
@@ -71,7 +74,7 @@ function DocumentDetails() {
         setQuizzes(response);
       } catch (error) {
           console.error(error);
-          setError("Failed to load quizzes");
+          setQuizzesError("Failed to load quizzes");
       } finally {
           setLoadingQuizzes(false);
       }
@@ -85,7 +88,7 @@ function DocumentDetails() {
       setFlashcards(response);
     } catch (err) {
       console.error(err);
-      setError("Failed to load flashcards");
+      setFlashcardsError("Failed to load flashcards");
     } finally {
       setLoadingFlashcards(false);
     }
@@ -97,17 +100,16 @@ function DocumentDetails() {
 
       try {
 
+        setLoading(true);
+        setDocumentError("");
+
         const data = await getDocumentById(id);
-
         setDocument(data);
-
       } catch (err) {
-
         console.error(err);
-        setError("Failed to load document");
+        setDocumentError("Failed to load document");
 
       } finally {
-
         setLoading(false);
       }
     };
@@ -118,6 +120,9 @@ function DocumentDetails() {
 
   if (loading) {
     return <p>Loading document...</p>;
+  }
+  if (documentError) {
+    return <p>{documentError}</p>;
   }
   if (!document) {
     return <p>Document not found.</p>;
@@ -160,7 +165,7 @@ function DocumentDetails() {
 
       <h2>Key Concepts</h2>
       <button 
-        onClick={generateConcepts}
+        onClick={loadKeyConcepts}
         disabled={loadingKeyConcepts}
         style={{ marginBottom: "20px" }}
       >

@@ -19,70 +19,6 @@ export const chatWithDocument = async(
   return response.data;
 };
 
-export const generateKeyConcepts = async (documentId) => {
-  const response = await api.post(
-    `/key-concepts/${documentId}`
-  );
-  return response.data;
-};
-
-export const getKeyConcepts = async (documentId) => {
-  const response = await api.get(`/key-concepts/${documentId}`);
-  return response.data;
-};
-
-export const generateStudyNotes = (documentId) =>{
-  const response = api.post(`/study-notes/${documentId}`);
-  return response.data;
-};
-
-export const getStudyNotes = async (documentId) => {
-  const response = await api.get(`//${documentId}/notes`);
-  return response.data;
-};
-
-export const getDocumentById = async (id) => {
-  try {
-    const response = await api.get(`/documents/${id}`);
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching document:", error);
-    throw error;
-  }
-};
-
-
-export const getCurrentUser = async () => {
-  try {
-    const response = await api.get("/users/me");
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching current user:", error);
-    throw error;
-  }
-};
-
-export const generateOrGetFlashcards = async (documentId) => {
-    const response = await api.get(`/flashcards/${documentId}`);
-    return response.data;
-};
-
-export const generateOrGetQuiz = async (documentId) => {
-    const response = await api.get(`/quizzes/${documentId}`);
-    return response.data;
-};
-
-export const submitQuiz = async (payload) => {
-  try {
-    const response = await api.post(`/quizzes/submit`, payload);
-    return response.data;
-  } catch (error) {
-    console.error("Error submitting quiz:", error);
-    throw error;
-  }
-};
-
-
 /**
 * Automatically attach JWT token to every request
 */
@@ -115,5 +51,65 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+export const chatWithDocument = async (documentId, question, topK = 5) => {
+  const response = await api.post(`/documents/${documentId}/chat`, {
+    question,
+    topK,
+  });
+
+  return response.data;
+};
+
+export const getCurrentUser = async () => {
+    const response = await api.get("/users/me");
+    return response.data;
+
+};
+
+export const generateKeyConcepts = async (documentId) => {
+  const response = await api.post(
+    `/key-concepts/${documentId}`
+  );
+  return response.data;
+};
+
+export const getKeyConcepts = async (documentId) => {
+  const response = await api.get(`/key-concepts/${documentId}`);
+  return response.data;
+};
+
+export const generateStudyNotes = async (documentId) => {
+  const response = await api.post(`/documents/${documentId}/study-notes`);
+  return response.data;
+};
+
+export const getStudyNotes = async (documentId) => {
+  const response = await api.get(`/documents/${documentId}/notes`);
+  return response.data;
+};
+
+export const getDocumentById = async (id) => {
+    const response = await api.get(`/documents/${id}`);
+    return response.data;
+
+};
+
+export const generateOrGetFlashcards = async (documentId) => {
+    const response = await api.get(`/flashcards/${documentId}`);
+    return response.data;
+};
+
+export const generateOrGetQuiz = async (documentId) => {
+    const response = await api.get(`/quizzes/${documentId}`);
+    return response.data;
+};
+
+export const submitQuiz = async (payload) => {
+    const response = await api.post(`/quizzes/submit`, payload);
+    return response.data;
+
+};
+
 
 export default api;
