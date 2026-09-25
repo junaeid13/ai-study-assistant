@@ -27,7 +27,7 @@ function Flashcard({flashcard}) {
            )}
 
             <button 
-                onClick={() => setShowAnswer(!showAnswer)}
+                onClick={() => setShowAnswer((prev) => !prev)}
                 style={{
                     marginTop: "10px"}}
             >

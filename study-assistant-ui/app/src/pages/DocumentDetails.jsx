@@ -41,7 +41,9 @@ function DocumentDetails() {
 
   const loadKeyConcepts = async () => {
     try {
+      setKeyConceptsError("");
       setLoadingKeyConcepts(true);
+
       const response = await generateKeyConcepts(id);
       setKeyConcepts(response);
     } catch (err) {
@@ -54,7 +56,9 @@ function DocumentDetails() {
 
   const loadStudyNotes = async () => {
     try {
+      setStudyNotesError("");
       setLoadingStudyNotes(true);
+
       const response = await generateStudyNotes(id);
       setStudyNotes(response);
     } catch (err) {
@@ -69,7 +73,9 @@ function DocumentDetails() {
   const loadQuiz = async () => {
 
     try {
+        setQuizzesError("");
         setLoadingQuizzes(true);
+
         const response = await generateOrGetQuiz(id);
         setQuizzes(response);
       } catch (error) {
@@ -152,6 +158,10 @@ function DocumentDetails() {
 
       <p>{document.summary}</p>
 
+      {/* Study Notes */}
+
+      <h2>Study Notes</h2>
+
       <button
         onClick={loadStudyNotes}
         disabled={loadingStudyNotes}
@@ -159,10 +169,13 @@ function DocumentDetails() {
       >
         {loadingStudyNotes ? "Generating..." : "Generate Study Notes"}
       </button>
+      {studyNotesError && (
+        <p style={{ color: "red" }}>{studyNotesError}</p>
+      )}
       <StudyNoteList 
             studyNotes={studyNotes} 
       />
-
+      {/* Key Concepts */}
       <h2>Key Concepts</h2>
       <button 
         onClick={loadKeyConcepts}
@@ -171,9 +184,11 @@ function DocumentDetails() {
       >
         {loadingKeyConcepts ? "Generating..." : "Generate Key Concepts"}
       </button>
-
+      {keyConceptsError && (
+        <p style={{ color: "red" }}>{keyConceptsError}</p>
+      )}
       <KeyConceptList keyConcepts={keyConcepts} />
-
+      {/* Flashcards */}
       <h2>Flashcards</h2>
 
       <button
@@ -183,16 +198,21 @@ function DocumentDetails() {
       >
         {loadingFlashcards ? "Generating..." : "Generate Flashcards"}
       </button>
-
+      {flashcardsError && (
+        <p style={{ color: "red" }}>{flashcardsError}</p>
+      )}
       <FlashcardList flashcards={flashcards} /> 
-
+      {/* Quizzes */}
+      <h2>Quizzes</h2>
       <button
         onClick={loadQuiz}
         disabled={loadingQuizzes}
         >
         {loadingQuizzes ? "Generating..." : "Generate Quiz"}
       </button>
-
+      {quizzesError && (
+        <p style={{ color: "red" }}>{quizzesError}</p>
+      )}
       <QuizList 
           quizzes={quizzes} 
           documentId={id}
