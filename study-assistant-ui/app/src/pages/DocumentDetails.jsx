@@ -5,9 +5,9 @@ import {
   getDocumentById,
   generateOrGetFlashcards,
   generateOrGetQuiz,
-  getStudyNotes,
+  generateStudyNotes,
   generateKeyConcepts,
-  getKeyConcepts,
+  generateKeyConcepts,
 } from "../services/api";
 import FlashcardList from "../components/FlashcardList";
 import QuizList from "../components/QuizList";
@@ -49,23 +49,10 @@ function DocumentDetails() {
     }
   };
 
-  const loadKeyConcepts = async () => {
-    try {
-      setLoadingKeyConcepts(true);
-      const response = await getKeyConcepts(id);
-      setKeyConcepts(response);
-    } catch (err) {
-      console.error(err);
-      setError("Failed to load key concepts");
-    } finally {
-      setLoadingKeyConcepts(false);
-    }
-  };
-
   const loadStudyNotes = async () => {
     try {
       setLoadingStudyNotes(true);
-      const response = await getStudyNotes(id);
+      const response = await generateStudyNotes(id);
       setStudyNotes(response);
     } catch (err) {
       console.error(err);
@@ -180,7 +167,7 @@ function DocumentDetails() {
         {loadingKeyConcepts ? "Generating..." : "Generate Key Concepts"}
       </button>
 
-      <keyConceptList keyConcepts={keyConcepts} />
+      <KeyConceptList keyConcepts={keyConcepts} />
 
       <h2>Flashcards</h2>
 
