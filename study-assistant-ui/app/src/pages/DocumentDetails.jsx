@@ -9,8 +9,8 @@ import {
   generateKeyConcepts,
 } from "../services/api";
 import FlashcardList from "../components/FlashcardList";
-import QuizList from "../components/QuizList";
-import StudyNoteList from "../components/StudyNoteList";
+import QuizList from "../components/quizzes/QuizList";
+import StudyNoteList from "../components/notes/StudyNoteList";
 import KeyConceptList from "../components/KeyConceptList";
 import ChatWithPdf from "../components/ChatWithPdf";
 

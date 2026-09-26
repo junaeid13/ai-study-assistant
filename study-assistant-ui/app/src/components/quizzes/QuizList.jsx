@@ -1,6 +1,6 @@
 import {useState} from "react";
 import QuizCard from "./QuizCard";
-import {submitQuiz} from "../services/api";
+import {submitQuiz} from "../../services/api";
 import QuizResult from "./QuizResult";
 
 

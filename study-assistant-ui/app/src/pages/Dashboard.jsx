@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import api, {getCurrentUser} from "../services/api";
-import Header from "../components/Header";
-import UploadForm from "../components/UploadForm";
-import SummaryCard from "../components/SummaryCard";
-import DocumentList from "../components/DocumentList";
+import Header from "../components/layout/Header";
+import UploadForm from "../components/documents/UploadForm";
+import SummaryCard from "../components/summazries/SummaryCard";
+import DocumentList from "../components/documents/DocumentList";
 
 function Dashboard() {
 
