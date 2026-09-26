@@ -88,6 +88,7 @@ function DocumentDetails() {
 
   const loadFlashcards = async () => {
     try {
+      setFlashcardsError("");
       setLoadingFlashcards(true);
       
       const response = await generateOrGetFlashcards(id);
@@ -169,14 +170,23 @@ function DocumentDetails() {
       >
         {loadingStudyNotes ? "Generating..." : "Generate Study Notes"}
       </button>
+
+      {loadingStudyNotes &&(
+        <p>Generating study notes...</p>
+      )}
+
       {studyNotesError && (
         <p style={{ color: "red" }}>{studyNotesError}</p>
       )}
-      <StudyNoteList 
-            studyNotes={studyNotes} 
-      />
+
+      {!loadingStudyNotes && !studyNotesError &&(
+        <StudyNoteList studyNotes={studyNotes} />
+      )}
+
       {/* Key Concepts */}
+
       <h2>Key Concepts</h2>
+      
       <button 
         onClick={loadKeyConcepts}
         disabled={loadingKeyConcepts}
@@ -184,10 +194,17 @@ function DocumentDetails() {
       >
         {loadingKeyConcepts ? "Generating..." : "Generate Key Concepts"}
       </button>
+      {loadingKeyConcepts && (
+        <p>Generating key concepts...</p>
+      )}
+
       {keyConceptsError && (
         <p style={{ color: "red" }}>{keyConceptsError}</p>
       )}
-      <KeyConceptList keyConcepts={keyConcepts} />
+      {!loadingKeyConcepts && !keyConceptsError && (
+        <KeyConceptList keyConcepts={keyConcepts} />
+      )}
+      
       {/* Flashcards */}
       <h2>Flashcards</h2>
 
@@ -198,25 +215,40 @@ function DocumentDetails() {
       >
         {loadingFlashcards ? "Generating..." : "Generate Flashcards"}
       </button>
+
+      {loadingFlashcards && (
+        <p>Generating flashcards...</p>
+      )}
+
       {flashcardsError && (
         <p style={{ color: "red" }}>{flashcardsError}</p>
       )}
-      <FlashcardList flashcards={flashcards} /> 
+
+      {!loadingFlashcards && !flashcardsError && (
+        <FlashcardList flashcards={flashcards}/>
+      )}
+
       {/* Quizzes */}
       <h2>Quizzes</h2>
+      
       <button
         onClick={loadQuiz}
         disabled={loadingQuizzes}
         >
         {loadingQuizzes ? "Generating..." : "Generate Quiz"}
       </button>
+
+      {loadingQuizzes && (
+        <p>Generating quiz...</p>
+      )}
+
       {quizzesError && (
         <p style={{ color: "red" }}>{quizzesError}</p>
       )}
-      <QuizList 
-          quizzes={quizzes} 
-          documentId={id}
-      />
+            
+      {!loadingQuizzes && !quizzesError && (
+        <QuizList quizzes={quizzes} />
+      )}
 
       <hr/>
       <ChatWithPdf documentId={id} />
