@@ -7,20 +7,27 @@ function FlashcardList({flashcards}) {
 
     return (
        <div style={{ padding: "20px" }}>
-            <h2 style={{ textAlign: "center", marginBottom: "20px" }}>
+            <h2 style={{ 
+                    textAlign: "center", 
+                    marginBottom: "20px" 
+                }}>
                 Generated Flashcards
             </h2>
 
             <div
                 style={{
                     display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                    gridTemplateColumns: 
+                        "repeat(auto-fit, minmax(280px, 1fr))",
                     gap: "20px",
                     justifyItems: "center",
                 }}
             >
-                {flashcards.map((flashcard, index) => (
-                    <Flashcard key={index} flashcard={flashcard} />
+                {flashcards.map((flashcard) => (
+                    <Flashcard 
+                        key={flashcard.id} 
+                        flashcard={flashcard} 
+                    />
                 ))}
             </div>
         </div>

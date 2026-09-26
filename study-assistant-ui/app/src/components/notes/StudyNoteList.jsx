@@ -6,16 +6,14 @@ function StudyNoteList({studyNotes}) {
     }
 
     return (
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <h2
-                style={{
-                    marginBottom: "20px",
-                    fontSize: "24px",
-                    fontWeight: "bold",
-                }}
-            >
-                Study Notes
-            </h2>
+        <div 
+        style={{ 
+            display: "flex", 
+            flexDirection: "column", 
+            alignItems: "center" 
+            }}
+        >
+            
             <div
                 style={{
                     display: "flex",

@@ -20,5 +20,5 @@ function KeyConcept({ keyConcept }) {
             >{keyConcept.explanation}</p>
         </div>
     );
-    export default KeyConcept;
 }
+export default KeyConcept;

@@ -5,119 +5,102 @@ import {
   getDocumentById,
   generateOrGetFlashcards,
   generateOrGetQuiz,
-  getStudyNotes,
+  generateStudyNotes,
   generateKeyConcepts,
-  getKeyConcepts,
 } from "../services/api";
-import FlashcardList from "../components/FlashcardList";
-import QuizList from "../components/QuizList";
-import StudyNoteList from "../components/StudyNoteList";
-import KeyConceptList from "../components/KeyConceptList";
-import ChatWithPdf from "../components/ChatWithPdf";
+import FlashcardList from "../components/flashcards/FlashcardList";
+import QuizList from "../components/quizzes/QuizList";
+import StudyNoteList from "../components/notes/StudyNoteList";
+import KeyConceptList from "../components/concepts/KeyConceptList";
+import ChatWithPdf from "../components/documents/ChatWithPdf";
+import ContentGenerationSection from "../components/documents/contentGenerationSection";
 
 function DocumentDetails() {
 
   const { id } = useParams();
 
 
-
+  const [document, setDocument] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [documentError, setDocumentError] = useState("");
 
   const [keyConcepts, setKeyConcepts] = useState([]);
   const [loadingKeyConcepts, setLoadingKeyConcepts] = useState(false);
+  const [keyConceptsError, setKeyConceptsError] = useState("");
+  
   const [studyNotes, setStudyNotes] = useState([]);
   const [loadingStudyNotes, setLoadingStudyNotes] = useState(false);
-  const [document, setDocument] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [studyNotesError, setStudyNotesError] = useState("");
+  
   const [flashcards, setFlashcards] = useState([]);
   const [loadingFlashcards, setLoadingFlashcards] = useState(false);
+  const [flashcardsError, setFlashcardsError] = useState("");
 
   const [quizzes, setQuizzes] = useState([]);
   const [loadingQuizzes, setLoadingQuizzes] = useState(false);
+  const [quizzesError, setQuizzesError] = useState("");
 
-
-  const generateConcepts = async () => {
+  const loadKeyConcepts = async () => {
     try {
+      setKeyConceptsError("");
       setLoadingKeyConcepts(true);
+
       const response = await generateKeyConcepts(id);
       setKeyConcepts(response);
     } catch (err) {
       console.error(err);
-      setError("Failed to generate key concepts");
+      setKeyConceptsError("Failed to generate key concepts");
     } finally {
       setLoadingKeyConcepts(false);
     }
   };
-
-  const loadKeyConcepts = async () => {
-    try {
-      setLoadingKeyConcepts(true);
-      const response = await getKeyConcepts(id);
-      setKeyConcepts(response);
-    } catch (err) {
-      console.error(err);
-      setError("Failed to load key concepts");
-    } finally {
-      setLoadingKeyConcepts(false);
-    }
-  };
-  
-  useEffect(() => {
-    loadKeyConcepts();
-  }, [id]);
-
 
   const loadStudyNotes = async () => {
     try {
+      setStudyNotesError("");
       setLoadingStudyNotes(true);
-      const response = await getStudyNotes(id);
+
+      const response = await generateStudyNotes(id);
       setStudyNotes(response);
     } catch (err) {
       console.error(err);
-      setError("Failed to load study notes");
+      setStudyNotesError("Failed to load study notes");
     } finally {
       setLoadingStudyNotes(false);
     }
   };
 
-  useEffect(() => {
-    loadStudyNotes();
-  }, [id]);
 
   const loadQuiz = async () => {
 
     try {
+        setQuizzesError("");
         setLoadingQuizzes(true);
+
         const response = await generateOrGetQuiz(id);
         setQuizzes(response);
       } catch (error) {
           console.error(error);
-          setError("Failed to load quizzes");
+          setQuizzesError("Failed to load quizzes");
       } finally {
           setLoadingQuizzes(false);
       }
     };
-    useEffect(() => {
-      loadQuiz();
-    }, [id]);
 
   const loadFlashcards = async () => {
     try {
+      setFlashcardsError("");
       setLoadingFlashcards(true);
       
-      const response = await getFlashcards(id);
+      const response = await generateOrGetFlashcards(id);
       setFlashcards(response);
     } catch (err) {
       console.error(err);
-      setError("Failed to load flashcards");
+      setFlashcardsError("Failed to load flashcards");
     } finally {
       setLoadingFlashcards(false);
     }
   };
-
-  useEffect(() => {
-    loadFlashcards();
-  }, [id]);
 
   useEffect(() => {
 
@@ -125,17 +108,16 @@ function DocumentDetails() {
 
       try {
 
+        setLoading(true);
+        setDocumentError("");
+
         const data = await getDocumentById(id);
-
         setDocument(data);
-
       } catch (err) {
-
         console.error(err);
-        setError("Failed to load document");
+        setDocumentError("Failed to load document");
 
       } finally {
-
         setLoading(false);
       }
     };
@@ -146,6 +128,9 @@ function DocumentDetails() {
 
   if (loading) {
     return <p>Loading document...</p>;
+  }
+  if (documentError) {
+    return <p>{documentError}</p>;
   }
   if (!document) {
     return <p>Document not found.</p>;
@@ -175,53 +160,56 @@ function DocumentDetails() {
 
       <p>{document.summary}</p>
 
-      <button
-        onClick={loadStudyNotes}
-        disabled={loadingStudyNotes}
-        style={{ marginBottom: "20px" }}
+      {/* Study Notes */}
+      <ContentGenerationSection
+        title="Study Notes"
+        buttonText="Generate Study Notes"
+        loadingText="Generating study notes..."
+        loading={loadingStudyNotes}
+        error={studyNotesError}
+        onGenerate={loadStudyNotes}
       >
-        {loadingStudyNotes ? "Generating..." : "Generate Study Notes"}
-      </button>
-      <StudyNoteList 
-            studyNotes={studyNotes} 
-      />
+        <StudyNoteList studyNotes={studyNotes} />
+      </ContentGenerationSection>
 
-      <h2>Key Concepts</h2>
-      <button 
-        onClick={generateConcepts}
-        disabled={loadingKeyConcepts}
-        style={{ marginBottom: "20px" }}
+      {/* Key Concepts */}
+      <ContentGenerationSection
+        title="Key Concepts"
+        buttonText="Generate Key Concepts"
+        loadingText="Generating key concepts..."
+        loading={loadingKeyConcepts}
+        error={keyConceptsError}
+        onGenerate={loadKeyConcepts}
       >
-        {loadingKeyConcepts ? "Generating..." : "Generate Key Concepts"}
-      </button>
-
-      <keyConceptList keyConcepts={keyConcepts} />
-
-      <h2>Flashcards</h2>
-
-      <button
-        onClick={loadFlashcards}
-        disabled={loadingFlashcards}
-        style={{ marginBottom: "20px" }}
+        <KeyConceptList keyConcepts={keyConcepts} />
+      </ContentGenerationSection>
+            
+      {/* Flashcards */}
+      <ContentGenerationSection
+        title="Flashcards"
+        buttonText="Generate Flashcards"
+        loadingText="Generating flashcards..."
+        loading={loadingFlashcards}
+        error={flashcardsError}
+        onGenerate={loadFlashcards}
       >
-        {loadingFlashcards ? "Generating..." : "Generate Flashcards"}
-      </button>
+        <FlashcardList flashcards={flashcards} />
+      </ContentGenerationSection>
 
-      <FlashcardList flashcards={flashcards} /> 
-
-      <button
-        onClick={loadQuiz}
-        disabled={loadingQuizzes}
-        >
-        {loadingQuizzes ? "Generating..." : "Generate Quiz"}
-      </button>
-
-      <QuizList 
-          quizzes={quizzes} 
-          documentId={id}
-      />
+      {/* Quizzes */}
+      <ContentGenerationSection
+        title="Quizzes"
+        buttonText="Generate Quiz"
+        loadingText="Generating quiz..."
+        loading={loadingQuizzes}
+        error={quizzesError}
+        onGenerate={loadQuiz}
+      >
+        <QuizList quizzes={quizzes} />
+      </ContentGenerationSection>
 
       <hr/>
+        
       <ChatWithPdf documentId={id} />
       
         

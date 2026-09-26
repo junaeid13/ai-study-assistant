@@ -1,6 +1,6 @@
 import {useState} from "react";
 import QuizCard from "./QuizCard";
-import {submitQuiz} from "../services/api";
+import {submitQuiz} from "../../services/api";
 import QuizResult from "./QuizResult";
 
 
@@ -11,6 +11,8 @@ function QuizList({
 
     const [answers, setAnswers] = useState({});
     const [result, setResult] = useState(null);
+    const [submitting, setSubmitting] = useState(false);
+    const [submitError, setSubmitError] = useState(null);
 
     const handleAnswer = (
         quizId, 
@@ -27,16 +29,21 @@ function QuizList({
             documentId,
             answers:quizzes.map(quiz => ({
                 quizId: quiz.id,
-                answer: answers[quiz.id] || null
+                answer: answers[quiz.id] ?? null
             }))
         };
 
-        console.log("Submitting quiz with payload:", payload);
+        setSubmitError("");
+        setSubmitting(true);
+
         try {
             const response = await submitQuiz(payload);
             setResult(response);
         } catch (error) {
             console.error("Error submitting quiz:", error);
+            setSubmitError("Failed to submit quiz. Please try again.");
+        } finally {
+            setSubmitting(false);
         }
     };
 
@@ -54,13 +61,21 @@ function QuizList({
                     onAnswerSelected={handleAnswer}     
                 />
         ))}
+
+        {submitError && (
+        <p style={{color: "red"}}>{submitError}</p>
+        )}
+      
         <button
             onClick={handleSubmit}
+            disabled={submitting}
             style={{marginTop: "20px"}}
         >
-            Submit Quiz
+            {submitting ? "Submitting..." : "Submit Quiz"}
         </button>
-        {result && <QuizResult result={result} />}  
+        {result && (
+            <QuizResult result={result} />
+        )}  
         </div>
     );
 }
