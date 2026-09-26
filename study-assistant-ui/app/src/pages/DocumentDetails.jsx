@@ -8,11 +8,11 @@ import {
   generateStudyNotes,
   generateKeyConcepts,
 } from "../services/api";
-import FlashcardList from "../components/FlashcardList";
+import FlashcardList from "../components/flashcards/FlashcardList";
 import QuizList from "../components/quizzes/QuizList";
 import StudyNoteList from "../components/notes/StudyNoteList";
-import KeyConceptList from "../components/KeyConceptList";
-import ChatWithPdf from "../components/ChatWithPdf";
+import KeyConceptList from "../components/concepts/KeyConceptList";
+import ChatWithPdf from "../components/documents/ChatWithPdf";
 
 function DocumentDetails() {
 
