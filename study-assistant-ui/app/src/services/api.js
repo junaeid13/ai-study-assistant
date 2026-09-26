@@ -94,7 +94,7 @@ export const getKeyConcepts = async (documentId) => {
  * Generate study notes for a document
  */
 export const generateStudyNotes = async (documentId) => {
-  const response = await api.post(`/documents/${documentId}/study-notes`);
+  const response = await api.post(`/documents/${documentId}/notes`);
   return response.data;
 };
 
