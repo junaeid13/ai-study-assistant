@@ -13,6 +13,7 @@ import QuizList from "../components/quizzes/QuizList";
 import StudyNoteList from "../components/notes/StudyNoteList";
 import KeyConceptList from "../components/concepts/KeyConceptList";
 import ChatWithPdf from "../components/documents/ChatWithPdf";
+import ContentGenerationSection from "../components/documents/contentGenerationSection";
 
 function DocumentDetails() {
 
@@ -160,97 +161,55 @@ function DocumentDetails() {
       <p>{document.summary}</p>
 
       {/* Study Notes */}
-
-      <h2>Study Notes</h2>
-
-      <button
-        onClick={loadStudyNotes}
-        disabled={loadingStudyNotes}
-        style={{ marginBottom: "20px" }}
+      <ContentGenerationSection
+        title="Study Notes"
+        buttonText="Generate Study Notes"
+        loadingText="Generating study notes..."
+        loading={loadingStudyNotes}
+        error={studyNotesError}
+        onGenerate={loadStudyNotes}
       >
-        {loadingStudyNotes ? "Generating..." : "Generate Study Notes"}
-      </button>
-
-      {loadingStudyNotes &&(
-        <p>Generating study notes...</p>
-      )}
-
-      {studyNotesError && (
-        <p style={{ color: "red" }}>{studyNotesError}</p>
-      )}
-
-      {!loadingStudyNotes && !studyNotesError &&(
         <StudyNoteList studyNotes={studyNotes} />
-      )}
+      </ContentGenerationSection>
 
       {/* Key Concepts */}
-
-      <h2>Key Concepts</h2>
-      
-      <button 
-        onClick={loadKeyConcepts}
-        disabled={loadingKeyConcepts}
-        style={{ marginBottom: "20px" }}
+      <ContentGenerationSection
+        title="Key Concepts"
+        buttonText="Generate Key Concepts"
+        loadingText="Generating key concepts..."
+        loading={loadingKeyConcepts}
+        error={keyConceptsError}
+        onGenerate={loadKeyConcepts}
       >
-        {loadingKeyConcepts ? "Generating..." : "Generate Key Concepts"}
-      </button>
-      {loadingKeyConcepts && (
-        <p>Generating key concepts...</p>
-      )}
-
-      {keyConceptsError && (
-        <p style={{ color: "red" }}>{keyConceptsError}</p>
-      )}
-      {!loadingKeyConcepts && !keyConceptsError && (
         <KeyConceptList keyConcepts={keyConcepts} />
-      )}
-      
+      </ContentGenerationSection>
+            
       {/* Flashcards */}
-      <h2>Flashcards</h2>
-
-      <button
-        onClick={loadFlashcards}
-        disabled={loadingFlashcards}
-        style={{ marginBottom: "20px" }}
+      <ContentGenerationSection
+        title="Flashcards"
+        buttonText="Generate Flashcards"
+        loadingText="Generating flashcards..."
+        loading={loadingFlashcards}
+        error={flashcardsError}
+        onGenerate={loadFlashcards}
       >
-        {loadingFlashcards ? "Generating..." : "Generate Flashcards"}
-      </button>
-
-      {loadingFlashcards && (
-        <p>Generating flashcards...</p>
-      )}
-
-      {flashcardsError && (
-        <p style={{ color: "red" }}>{flashcardsError}</p>
-      )}
-
-      {!loadingFlashcards && !flashcardsError && (
-        <FlashcardList flashcards={flashcards}/>
-      )}
+        <FlashcardList flashcards={flashcards} />
+      </ContentGenerationSection>
 
       {/* Quizzes */}
-      <h2>Quizzes</h2>
-      
-      <button
-        onClick={loadQuiz}
-        disabled={loadingQuizzes}
-        >
-        {loadingQuizzes ? "Generating..." : "Generate Quiz"}
-      </button>
-
-      {loadingQuizzes && (
-        <p>Generating quiz...</p>
-      )}
-
-      {quizzesError && (
-        <p style={{ color: "red" }}>{quizzesError}</p>
-      )}
-            
-      {!loadingQuizzes && !quizzesError && (
+      <ContentGenerationSection
+        title="Quizzes"
+        buttonText="Generate Quiz"
+        loadingText="Generating quiz..."
+        loading={loadingQuizzes}
+        error={quizzesError}
+        onGenerate={loadQuiz}
+      >
         <QuizList quizzes={quizzes} />
-      )}
+      </ContentGenerationSection>
 
       <hr/>
+        
       <ChatWithPdf documentId={id} />
       
         
