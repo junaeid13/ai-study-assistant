@@ -1,9 +1,9 @@
 import {useState} from "react";
-import {chatWithDocument} from "../api/chatWithDocument";
+import {chatWithDocument} from "../../services/api";
 
 function ChatWithPdf({documentId}) {
     const [question, setQuestion] = useState("");
-    const [message, setMessage] = useState("");
+    const [messages, setMessage] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
@@ -16,10 +16,13 @@ function ChatWithPdf({documentId}) {
 
         const userQuestion = question.trim();
 
-        setMessage((previousMessages) =>[ ...previousMessages,{
-            role: "user",
-            content: userQuestion
-        },]);
+        setMessage((previousMessages) =>[ 
+            ...previousMessages,
+            {
+                role: "user",
+                content: userQuestion,
+            },
+        ]);
 
         setQuestion("");
         setError("");
@@ -30,11 +33,14 @@ function ChatWithPdf({documentId}) {
                 documentId, 
                 userQuestion
             );
-            setMessage((previousMessages) => [...previousMessages, {
+            setMessage((previousMessages) => [
+                ...previousMessages, 
+                {
                 role: "assistant",
                 content: response.answer,
-                sources: response.sources || []
-            }]);
+                sources: response.sources || [],
+                },
+            ]);
         } catch (err) {
             console.error("Error during chat:", err);
             setError("An error occurred while processing your request.");
