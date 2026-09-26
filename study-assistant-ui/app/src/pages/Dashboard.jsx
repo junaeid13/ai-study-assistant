@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import api, {getCurrentUser} from "../services/api";
 import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+
+import api, {getCurrentUser} from "../services/api";
 import Header from "../components/Header";
-import LoadingSpinner from "../components/LoadingSprinner";
 import UploadForm from "../components/UploadForm";
 import SummaryCard from "../components/SummaryCard";
 import DocumentList from "../components/DocumentList";
@@ -16,14 +15,16 @@ function Dashboard() {
 
     const [loading, setLoading] = useState(false); 
     const [error, setError] = useState(""); 
+
     const navigate = useNavigate(); 
+    
     const [user, setUser] = useState(null);
 
 
     const loadDocuments = async () => {
         try {
             const response = await api.get(
-                "http://localhost:8080/api/documents"
+                "/documents"
             );
 
             setDocuments(Array.isArray(response.data) ? response.data : []);
@@ -53,7 +54,6 @@ function Dashboard() {
         navigate("/login");
     };
     const uploadFile = async () => {
-
         if (!file) {
             alert("Please select a file");
             return;
@@ -66,19 +66,14 @@ function Dashboard() {
             const formData = new FormData();
             formData.append("file", file);
 
-            const response = await api.post(
-                "http://localhost:8080/api/summarize",
-                formData
-            );
+            const response = await api.post("/summarize", formData);
 
             setResult(response.data);
 
             await loadDocuments();
-
         } catch (err) {
             console.error(err);
             setError("Upload failed. Please try again.");
-
         } finally {
             setLoading(false);
         }
@@ -88,11 +83,6 @@ function Dashboard() {
         loadDocuments();
         fetchUser();
     }, []);
-
-    if(loading && !result) {
-        return <LoadingSpinner />;
-    }
-
     return (
         <div style={{ padding: "20px" }}>
             <Header 
