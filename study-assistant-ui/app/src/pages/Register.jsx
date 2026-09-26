@@ -8,9 +8,13 @@ function Register() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const register = async (e) => {
     e.preventDefault();
+
+    setMessage("");
+    setLoading(true);
 
     try {
       await api.post("/auth/register", {
@@ -29,9 +33,10 @@ function Register() {
       );
 
       navigate("/"); 
-
     } catch (err) {
       setMessage("Registration failed");
+    } finally {
+      setLoading(false);
     }
   };
 
