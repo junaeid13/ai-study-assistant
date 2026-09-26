@@ -7,20 +7,28 @@ function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
 
   const login = async (e) => {
     e.preventDefault();
+
     setError('');
+    setLoading(true);
+    
     try {
       const response = await api.post('/auth/login', {username, password});
+      
       localStorage.setItem('token', response.data.token);
+
       navigate('/');   
-    
     } catch (err) {
       setError('Login failed. Please check your credentials.');
       console.error(err);
-    }};
+    } finally {
+      setLoading(false);
+    }}
 
     return (
     <div style={{ padding: "20px" }}>
@@ -56,7 +64,7 @@ function Login() {
         <br />
 
         <button type="submit">
-          Login
+          {loading ? "Logging in..." : "Login"}
         </button>
         <p>
           Don't have an account? 
