@@ -50,7 +50,7 @@ class VectorStore:
             top_k:int=5,
             distance_threshold:float=0.8
             ):
-        query_embedding = self.embedding_model.encode(
+        query_embedding = self.model.encode(
             [query]
         ).tolist()
 
@@ -60,9 +60,9 @@ class VectorStore:
             where={"document_id": document_id}
         )
 
-        documents = results['documents',[[]]][0]
-        distances = results['distances',[[]]][0]
-        metadatas = results['metadatas',[[]]][0]
+        documents = results.get("documents",[[]])[0]
+        distances = results.get("distances",[[]])[0]
+        metadatas = results.get("metadatas",[[]])[0]
 
         search_results = []
 
