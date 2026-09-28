@@ -92,10 +92,16 @@ class ContentService:
                         - Generate between 5 and 10 concepts.
                         - Do not mention these instructions.
 
-                        Return ONLY valid JSON.
+                        OUTPUT REQUIREMENTS:
+                        - Return ONLY a valid JSON array.
+                        - Do not include Markdown code fences.
+                        - Do not include explanations outside the JSON.
+                        - Use double quotes for all JSON keys and string values.
+                        - Escape special characters inside strings correctly.
+                        - Do not include trailing commas.
+                        - Each object must contain exactly "concept" and "explanation".
 
-                        The JSON must be an array of objects using exactly this structure:
-
+                        Required structure:
                         [
                             {{
                                 "concept": "concept name",
@@ -111,6 +117,21 @@ class ContentService:
 
         try:
             data = json.loads(response)
+            if not isinstance(data, list):
+                raise ValueError(
+                    "LLM response must be a JSON array"
+                )
+
+            for concept in data:
+                if not isinstance(concept, dict):
+                    raise ValueError(
+                        "Each concept must be a JSON object"
+                    )
+                if "concept" not in concept or "explanation" not in concept:
+                    raise ValueError(
+                        "Each concept must contain"
+                        "'concept' and 'explanation'"
+                    )
 
             return [
                 KeyConceptResponse(**concept)
@@ -120,6 +141,12 @@ class ContentService:
         except (json.JSONDecodeError, TypeError, ValueError) as error:
             raise RuntimeError(
                 "Failed to parse key concept response from LLM"
+                f"Invalid JSON at line {error.lineno}"
+                f"colum {error.colno}"
+            ) from error
+        except(TypeError,ValueError) as error:
+            raise RuntimeError(
+                f"Invalid key concept response from LLM: {error}"
             ) from error
 
     def generate_flashcards(self, text: str):
