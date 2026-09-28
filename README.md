@@ -126,9 +126,9 @@ ai-study-assistant/
 │
 ├── study-assistant-ui/          # React Frontend
 │
-├── study-assistant-backend/     # Spring Boot
+├── study-assistant-api/     # Spring Boot
 │
-├── study-assistant-python/      # FastAPI AI Service
+├── study-assistant-ai/      # FastAPI AI Service
 │
 └── README.md
 ```
