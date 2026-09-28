@@ -64,11 +64,16 @@ class VectorStore:
         distances = results.get("distances",[[]])[0]
         metadatas = results.get("metadatas",[[]])[0]
 
+        print("QUERY:", query)
+        print("DOCUMENT ID:", document_id)
+        print("DISTANCES:", results.get("distances"))
+        print("DOCUMENTS:", results.get("documents"))
+
         search_results = []
 
         for i in range(len(documents)):
-            if distances[i] > distance_threshold:
-                continue
+          #  if distances[i] > distance_threshold:
+          #      continue
             metadata = metadatas[i]
             search_results.append({
                 "context": documents[i],
@@ -125,5 +130,12 @@ class VectorStore:
             key=lambda result: result["metadata"]["chunkIndex"]
             )
         return expanded_results
+    def debug_collection(self):
+        results = self.collection.get()
+
+        print("TOTAL CHUNKS:", len(results.get("ids", [])))
+        print("CHROMA IDS:", results.get("ids"))
+        print("CHROMA METADATAS:", results.get("metadatas"))
 
 vector_store = VectorStore()
+vector_store.debug_collection()

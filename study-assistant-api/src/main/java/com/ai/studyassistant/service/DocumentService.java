@@ -20,14 +20,17 @@ public class DocumentService {
     private final DocumentRepository documentRepository;
     private final UserRepository userRepository;
     private final PythonApiClient pythonApiClient;
+    private final DocumentChunkService documentChunkService;
 
     public DocumentService(
             DocumentRepository documentRepository,
             UserRepository userRepository,
-            PythonApiClient pythonApiClient) {
+            PythonApiClient pythonApiClient,
+            DocumentChunkService documentChunkService) {
         this.documentRepository = documentRepository;
         this.userRepository = userRepository;
         this.pythonApiClient = pythonApiClient;
+        this.documentChunkService = documentChunkService;
     }
 
 
@@ -64,9 +67,11 @@ public class DocumentService {
         document.setFilename(file.getOriginalFilename());
 
         document.setUser(user);
+        Document savedDocument = documentRepository.save(document);
+        documentChunkService.createChunk(savedDocument.getId());
 
 
-        return documentRepository.save(document);
+        return savedDocument;
     }
 
 

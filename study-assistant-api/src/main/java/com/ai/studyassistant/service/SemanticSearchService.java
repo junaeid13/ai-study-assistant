@@ -42,7 +42,7 @@ public class SemanticSearchService {
             );
         }
 
-        Integer topK = request.topk() == null ? 5 : request.topk();
+        Integer topK = request.topK() == null ? 5 : request.topK();
 
         if (topK <= 0) {
             throw new InvalidRequestException(

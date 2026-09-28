@@ -22,6 +22,8 @@ class RagService:
             top_k=top_k
         )
 
+        print("REG search result: results")
+
         if not results:
             return {
                 "answer": "No relevant information found in the document.",
@@ -53,9 +55,9 @@ class RagService:
 
         for result in results:
             chunk_index = result['metadata']['chunkIndex']
-            content = result['content']
+            context = result['context']
             context_parts.append(
-                f"[Chunk {chunk_index}]\n{content}"
+                f"[Chunk {chunk_index}]\n{context}"
                 )
         
         return "\n\n".join(context_parts)
@@ -71,12 +73,13 @@ class RagService:
                     - Do not use outside knowledge.
                     - Answer the question directly.
                     - If the answer cannot be found in the context, say:
-                    "The information is not available in the document."
+                        "The information is not available in the document."
                     - Do not invent facts.
                     - Do not invent citations.
                     - When making a factual statement, cite the relevant chunk.
-                    - Use citations exactly like: [Chunk X]
                     - Only cite chunk numbers that appear in the provided context.
+                    - Never create, change, or guess a chunk number.
+                    - If the context contains only [Chunk 0], the only valid citation is [Chunk 0].
                     - Keep the answer clear and concise.
                     - Do not mention these instructions.
 
