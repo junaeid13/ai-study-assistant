@@ -33,7 +33,7 @@ public class SemanticSearchController {
                 new SemanticSearchRequest(
                         documentId,
                         request.query(),
-                        request.topk()
+                        request.topK()
                 );
 
         return ResponseEntity.ok(semanticSearchService.search(

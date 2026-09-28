@@ -50,7 +50,7 @@ class VectorStore:
             top_k:int=5,
             distance_threshold:float=0.8
             ):
-        query_embedding = self.embedding_model.encode(
+        query_embedding = self.model.encode(
             [query]
         ).tolist()
 
@@ -60,15 +60,20 @@ class VectorStore:
             where={"document_id": document_id}
         )
 
-        documents = results['documents',[[]]][0]
-        distances = results['distances',[[]]][0]
-        metadatas = results['metadatas',[[]]][0]
+        documents = results.get("documents",[[]])[0]
+        distances = results.get("distances",[[]])[0]
+        metadatas = results.get("metadatas",[[]])[0]
+
+        print("QUERY:", query)
+        print("DOCUMENT ID:", document_id)
+        print("DISTANCES:", results.get("distances"))
+        print("DOCUMENTS:", results.get("documents"))
 
         search_results = []
 
         for i in range(len(documents)):
-            if distances[i] > distance_threshold:
-                continue
+          #  if distances[i] > distance_threshold:
+          #      continue
             metadata = metadatas[i]
             search_results.append({
                 "context": documents[i],
@@ -125,5 +130,12 @@ class VectorStore:
             key=lambda result: result["metadata"]["chunkIndex"]
             )
         return expanded_results
+    def debug_collection(self):
+        results = self.collection.get()
+
+        print("TOTAL CHUNKS:", len(results.get("ids", [])))
+        print("CHROMA IDS:", results.get("ids"))
+        print("CHROMA METADATAS:", results.get("metadatas"))
 
 vector_store = VectorStore()
+vector_store.debug_collection()

@@ -205,7 +205,10 @@ function DocumentDetails() {
         error={quizzesError}
         onGenerate={loadQuiz}
       >
-        <QuizList quizzes={quizzes} />
+        <QuizList 
+          quizzes={quizzes} 
+          documentId={id}
+        />
       </ContentGenerationSection>
 
       <hr/>
